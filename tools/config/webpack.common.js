@@ -17,17 +17,6 @@ module.exports = {
  //Module section
   module:{
     rules:[
-    //typescript rule
-      {
-        test: /\.ts$/,
-        use:[
-          {
-            loader: 'awesome-typescript-loader',
-            options:{configFileName:helper.root('src','tsconfig.json')}
-          },
-          'angular2-template-loader'
-        ]
-      },
       //Html rule
       {
         test: /\.html$/,
@@ -38,7 +27,7 @@ module.exports = {
       },
       //Image and fonts rule
       {
-        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+        test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
         use: ['file-loader?name=assets/[name].[hash].[ext]']
       },
       //Css in assets rule
