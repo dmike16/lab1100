@@ -1,0 +1,60 @@
+{
+  "name": "@dmike16/lab1100",
+  "version": "1.0.0",
+  "description": "Dashboard for my homework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmike16/lab1100"
+  },
+  "scripts": {
+    "start": "gulp serve",
+    "build": "gulp build",
+    "prod": "gulp build:aot",
+    "dist": "gulp pack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["homework","lab"],
+  "author": "dmike16",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "^5.1.0",
+    "@angular/compiler": "^5.1.0",
+    "@angular/core": "^5.1.0",
+    "@angular/forms": "^5.1.0",
+    "@angular/http": "^5.1.0",
+    "@angular/platform-browser": "^5.1.0",
+    "@angular/platform-browser-dynamic": "^5.1.0",
+    "@angular/router": "^5.1.0",
+    "core-js": "^2.5.2",
+    "rxjs": "^5.5.5",
+    "zone.js": "^0.8.18"
+  },
+  "devDependencies": {
+    "@angular/language-service": "^5.1.0",
+    "@ngtools/webpack": "^1.9.0",
+    "@types/jasmine": "^2.8.2",
+    "@types/node": "^8.0.57",
+    "angular2-template-loader": "^0.6.2",
+    "awesome-typescript-loader": "^3.4.1",
+    "clean-webpack-plugin": "^0.1.17",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.5",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "gulp-zip": "^4.0.0",
+    "html-loader": "^0.5.1",
+    "html-webpack-plugin": "^2.30.1",
+    "jasmine-core": "^2.8.0",
+    "node-sass": "^4.7.2",
+    "pump": "^2.0.0",
+    "raw-loader": "^0.5.1",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7",
+    "webpack-merge": "^4.1.1",
+    "webpack-stream": "^4.0.0"
+  }
+}

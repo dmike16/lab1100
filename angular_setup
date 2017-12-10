@@ -1,0 +1,242 @@
+#! /bin/bash
+#
+#  Author       : dmike
+#  Date         : 23 September 2017
+#  Description  : Bash script for setup angular application using webpack
+#    This script will create npm package.json, download all dependencies
+#    and setup typescript compiler configuration file plus three webpack
+#    config.js [common,developemnt,prodaction].
+#
+#  Entry Point  : Main function
+# ============================================================================ #
+
+source angularbashutil/configuration/setup.bash
+source angularbashutil/logging/logging.bash
+source angularbashutil/generators/factory_generator.bash
+
+readonly E_BADARGS=85
+readonly E_COMMAND_NOT_FOUND=127
+
+declare -a cmds
+
+function _exit_code() {
+  case $1 in
+    0)
+    ;;
+    ${E_BADARGS})
+      logging__error "Bad Arguments: $2"
+      exit $1
+    ;;
+    ${E_COMMAND_NOT_FOUND})
+      logging__error "Command $2 not found"
+      exit $1
+    ;;
+    *)
+      logging__error "Script Error: $2"
+      exit $1
+    ;;
+  esac
+}
+
+function _build_tree() {
+  local tools
+  local config
+  local gulp_task
+  local src
+  local app
+  local assets
+  local css
+  local images
+
+  tools=${PWD}/tools
+  config=${tools}/config
+  gulp_task=${tools}/gulp-task
+  src=${PWD}/src
+  app=${src}/app
+  assets=${src}/assets
+  css=${assets}/css
+  images=${assets}/images
+
+  logging__info "Setup Project ${1}"
+
+
+  if [[ -e "${PWD}/package-lock.json" ]]; then
+      logging__info "Project already initialized. Use npm i --save[-dev] [package] \
+       to install new dependencies"
+  else
+      setup__package_json "$1" "$2" "$3" "$4"
+      _exit_code $? "setup__package_json"
+
+      logging__info "Project npm initialized"
+      (setup__angular_dep "${cmds[0]}" "${cmds[1]}"
+      _exit_code $? "Installing dependencies") &
+
+      logging__info "Dependencies npm installed"
+
+  fi
+
+  logging__info "Create src direcotry"
+  mkdir -p "${src}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create config direcotry"
+  mkdir -p "${config}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create gulp-task direcotry"
+  mkdir -p "${gulp_task}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create assets direcotry"
+  mkdir -p "${assets}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create css direcotry"
+  mkdir -p "${css}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create images direcotry"
+  mkdir -p "${images}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create app direcotry"
+  mkdir -p "${app}"
+  _exit_code $? "mkdir"
+
+  logging__info "Create helper.js"
+  setup__path_helper "${config}"
+  _exit_code $? "setup__path_helper"
+
+  logging__info "Create webpack.common.js"
+  setup__config_common "${config}"
+  _exit_code $? "setup__config_common"
+
+  logging__info "Create webpack.dev.js"
+  setup__config_dev "${config}"
+  _exit_code $? "setup__config_dev"
+
+  logging__info "Create webpack.prod.js"
+  setup__config_production "${config}" "${1}"
+  _exit_code $? "setup__config_production"
+
+  logging__info "Create tsconfig.json"
+  setup__typescript_config "${src}"
+  _exit_code $? "setup__typescript_config"
+
+  logging__info "Create gulp setup"
+  setup__gulp_setup "${PWD}" "${gulp_task}"
+  _exit_code $? "setup__gulp_setup"
+
+  logging__info "Create polyfill.ts"
+  setup__polyfill_ts "${src}"
+  _exit_code $? "setup__polyfill_ts"
+
+  logging__info "Create vendor.ts"
+  setup__vendor_ts "${src}"
+  _exit_code $? "setup__vendor_ts"
+
+  logging__info "Create bootstrap file"
+  setup__angular_bootstrap "${src}"
+  _exit_code $? "setup__angular_bootstrap"
+
+  logging__info "Create first app component file"
+  setup__angular_comp "${app}"
+  _exit_code $? "setup__angular_comp"
+
+  logging__info "Create global css style"
+  setup__angular_style "${css}"
+  _exit_code $? "setup__angular_style"
+
+  logging__info "Download angular quickstart image"
+  setup__angular_image "${images}"
+  _exit_code $? "setup__angular_image"
+
+}
+
+# ============================================================================ #
+# Check dependencies for setup angular prokect
+# Globals:
+#  None
+# Arguments:
+#  None
+# Returns:
+#  None
+# ============================================================================ #
+function _check_dependecies() {
+  logging__info "Check dependencies"
+
+  local npm_version
+  local yarn_version
+
+  yarn_version=$(yarn -v)
+  if [[ $? ]]; then
+    cmds[0]="yarn add"
+    cmds[1]="yarn add --dev"
+    logging__info "YARN TEST: Version ${yarn_version}"
+  else
+    npm_version=$(npm -v)
+    _exit_code $? "npm"
+    cmds[0]="npm install"
+    cmds[1]="npm install --save-dev"
+    logging__info "NPM TEST: Version ${npm_version}"
+  fi
+}
+
+function init_project() {
+  local project_name
+  local description
+  local license
+  local author
+
+  project_name=${1:-"angular-project"}
+  description=${2:-"Angular2 Webpack Project"}
+  license=${3:-"MIT"}
+  author=${4:-"you"}
+
+  _check_dependecies
+  _build_tree "${project_name}" "${description}" "${license}" "${author}"
+
+  if [[ -e "${PWD}/.initialized" ]]; then
+    :
+  else
+    logging__info "Waiting for install dependencies process"
+    wait
+    rm -f ${PWD}/.initialized
+  fi
+
+  logging__info "Return function: ${FUNCNAME} in ${SECONDS}s"
+
+  if [[ -e "${PWD}"/node_modules ]]; then
+    echo "# ============================================== #"
+    echo "#                                                #"
+    echo "# The project ${project_name} is initialized.    #"
+    echo "# To start developing the app:                   #"
+    echo "#  1. cd in ${project_name}                      #"
+    echo "#  2. npm run start                              #"
+    echo "# Now the app is running at localhost:4200,      #"
+    echo "# every change to the source code cause a        #"
+    echo "# rebuild of the app and a refresh of the broswer#"
+    echo "#                                                #"
+    echo "# To build the app for production type:          #"
+    echo "# npm run build                                  #"
+    echo "# The generated files will be in dist direcotry  #"
+    echo "#                                                #"
+    echo "# ============================================== #"
+  fi
+}
+
+function main(){
+  logging__info "Enter function: ${FUNCNAME}"
+
+  if [[ "$1" == "generate" ]]; then
+    shift
+    generator__factory "$@"
+    _exit_code "$?" "$1 in generator__factory"
+    return
+  fi
+
+  init_project "$@"
+
+}
+
+main "$@"
