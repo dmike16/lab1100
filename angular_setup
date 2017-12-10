@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 #
 #  Author       : dmike
 #  Date         : 23 September 2017
@@ -60,6 +60,7 @@ function _build_tree() {
   logging__info "Setup Project ${1}"
 
 
+
   if [[ -e "${PWD}/package-lock.json" ]]; then
       logging__info "Project already initialized. Use npm i --save[-dev] [package] \
        to install new dependencies"
@@ -68,8 +69,11 @@ function _build_tree() {
       _exit_code $? "setup__package_json"
 
       logging__info "Project npm initialized"
-      (setup__angular_dep "${cmds[0]}" "${cmds[1]}"
-      _exit_code $? "Installing dependencies") &
+
+      #(
+      #setup__angular_dep "${cmds[0]}" "${cmds[1]}"
+      #_exit_code $? "Installing dependencies"
+      #) &
 
       logging__info "Dependencies npm installed"
 
@@ -147,9 +151,9 @@ function _build_tree() {
   setup__angular_style "${css}"
   _exit_code $? "setup__angular_style"
 
-  logging__info "Download angular quickstart image"
-  setup__angular_image "${images}"
-  _exit_code $? "setup__angular_image"
+  #logging__info "Download angular quickstart image"
+  #setup__angular_image "${images}"
+  #_exit_code $? "setup__angular_image"
 
 }
 

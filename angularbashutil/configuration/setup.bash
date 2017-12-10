@@ -179,30 +179,61 @@ DEV
 # ============================================================================ #
 function setup__config_production() {
   cat >${1}/webpack.prod.js <<PROD
-const webpackMerge = require('webpack-merge');
+  const webpackMerge = require('webpack-merge');
+  const ExtractTextPlugin = require('extract-text-webpack-plugin');
+  const CleanWebpackPlugin = require('clean-webpack-plugin');
+  const commonConfig = require('./webpack.common.js');
+  const {plugins} = require('./webpack.prod.env');
+  const helper = require('./helper');
+
+  module.exports = webpackMerge(commonConfig,{
+    devtool: 'source-map',
+
+    output: {
+      path: helper.root('build'),
+      publicPath: '/lab1100/',
+      filename: '[name].[chunkhash].js',
+      chunkFilename: '[id].[chunkhash].chunk.js'
+    },
+
+    module: {
+      rules: [
+        //typescript rule
+        {
+          test: /\.ts$/,
+          use: [{
+              loader: 'awesome-typescript-loader',
+              options: {
+                configFileName: helper.root('src', 'tsconfig.json')
+              }
+            },
+            'angular2-template-loader'
+          ]
+        }
+      ]
+    },
+
+    plugins:[
+      ...plugins
+    ]
+  });
+PROD
+  cat > ${1}/webpack.prod.env.js <<PRODENV
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const commonConfig = require('./webpack.common.js');
 const helper = require('./helper');
 const info = require(helper.root('package.json'));
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const VERSION = info.version;
 const PROJECT_NAME = info.name;
 
-module.exports = webpackMerge(commonConfig,{
-  devtool: 'source-map',
-
-  output: {
-    path: helper.root('dist'),
-    publicPath: '/',
-    filename: '[name].[chunkhash].js',
-    chunkFilename: '[id].[chunkhash].chunk.js'
-  },
-
-  plugins:[
-  //Clean dist on rebuild
-    new CleanWebpackPlugin(['build'],{allowExternal: true}),
+module.exports = {
+  plugins: [
+    //Clean dist on rebuild
+    new CleanWebpackPlugin([helper.root('build')], {
+      allowExternal: true
+    }),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HashedModuleIdsPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
@@ -211,22 +242,53 @@ module.exports = webpackMerge(commonConfig,{
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
       uglifyOptions: {
-        mangle:{
+        mangle: {
           keep_fnames: true
         }
       }
     }),
     new ExtractTextPlugin('[name].[chunkhash].css'),
-    new webpack.DefinePlugin({
-      'process.env':{
+    new webpack.DefinePlugin(
+    {
+        'process.env': {
         'ENV': JSON.stringify(ENV),
         'VERSION': JSON.stringify(VERSION),
         'PROJECT_NAME': JSON.stringify(PROJECT_NAME)
       }
-    })
+    }),
+    new webpack.ProgressPlugin()
+  ]
+};
+PRODENV
+  cat > ${1}/webpack.prod.aot.js <<PRODAOT
+const {AngularCompilerPlugin} = require('@ngtools/webpack');
+const {plugins} = require('./webpack.prod.env');
+const webpackMerge = require('webpack-merge');
+const prodaction = require('./webpack.prod');
+const common = require('./webpack.common');
+const helper = require('./helper');
+
+module.exports = webpackMerge(common, {
+  devtool: prodaction.devtool,
+  output: prodaction.output,
+
+  module: {
+    rules: [{
+      test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+      loader: '@ngtools/webpack'
+    }]
+  },
+
+  plugins: [
+    new AngularCompilerPlugin({
+      tsConfigPath: helper.root('src','tsconfig.json'),
+      entryModule: helper.root('src','app','app.module#AppModule'),
+      sourceMap: true
+    }),
+    ...plugins
   ]
 });
-PROD
+PRODAOT
 }
 # ============================================================================ #
 # Create the package.json with param passed from
@@ -247,6 +309,7 @@ function setup__package_json() {
     "version": "1.0.0",
     "description": "$2",
     "scripts": {
+      "info": "gulp",
       "start": "gulp serve",
       "build": "gulp build",
       "prod": "gulp build:aot",
@@ -561,32 +624,36 @@ SERVE
  * Gulp build task
  */
 
-exports.default = (gulp) => (cb) => {
-  const pump = require('pump');
-  const prodaction = require('../config/webpack.prod');
+function builProcess(gulp,configuration,cb){
   const webpack = require('webpack');
   const webpackStream = require('webpack-stream');
+  const pump = require('pump');
   const helper = require('../config/helper');
   const src = helper.root('src');
+
   pump([
-    gulp.src([\`\${src}/main.ts\`,\`\${src}/polyfills.ts\`,\`\${src}/vendor.ts\`]),
-    webpackStream({
-      config: prodaction,
-      progress: true
-    }),
+    gulp.src([`${src}/main.ts`,`${src}/polyfills.ts`,`${src}/vendor.ts`]),
+    webpackStream(configuration,webpack),
     gulp.dest(helper.root('build'))
   ],cb);
+}
+
+exports.default = (gulp) => (cb) => {
+  const prodaction = require('../config/webpack.prod');
+
+  builProcess(gulp,prodaction,cb);
 };
 
-exports.aot = (gulp) => () => {
-  const gutil = require('gulp-util');
-  gutil.log('TO DO');
-}
+exports.aot = (gulp) => (cb) => {
+  const prodAOT = require('../config/webpack.prod.aot');
+
+  builProcess(gulp,prodAOT,cb);
+};
 
 exports.pack = (gulp) => () => {
   const gutil = require('gulp-util');
   gutil.log('TO DO');
-}
+};
 BUILD
   return $?
 }
@@ -640,7 +707,7 @@ function setup__angular_dep() {
   html-loader html-webpack-plugin jasmine-core raw-loader style-loader \
   typescript webpack webpack-dev-server webpack-merge clean-webpack-plugin \
   gulp gulp-zip gulp-util pump webpack-stream @ngtools/webpack @angular/language-service \
-  sass-loader node-sass && \
+  @angular/compiler-cli sass-loader node-sass && \
   touch .initialized
 
   return $?
