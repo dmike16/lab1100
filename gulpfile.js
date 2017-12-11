@@ -1,16 +1,10 @@
 /**
- * Gulp file configuration
+ * Gulp file usgin ts-node + typescript
  */
-const gulp = require('gulp');
+const path = require('path');
+const tsconfigPath = path.join(__dirname,'tools/gulp/tsconfig.json');
 
-function loadTask(fileName,taskName){
-  let task = require(`./tools/gulp-task/${fileName}`);
-  let tn = taskName || 'default';
-  return task[tn](gulp);
-}
-
-gulp.task('default',loadTask('default'));
-gulp.task('serve',loadTask('serve'));
-gulp.task('build',loadTask('build'));
-gulp.task('build:aot',loadTask('build','aot'));
-gulp.task('build:pack',['build:aot'],loadTask('build','pack'));
+require('ts-node').register({
+  project: tsconfigPath
+});
+require('./tools/gulp/gulpfile');
