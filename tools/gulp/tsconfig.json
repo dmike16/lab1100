@@ -10,10 +10,10 @@
     "alwaysStrict": true,
     "declaration": true,
     "lib":[
-      "ES6"
+      "ES6","ES2015"
     ],
     "typeRoots" : ["./node_modules","./types"],
-    "types": ["node","gulp","gulp-util","*.json"]
+    "types": ["node","gulp","gulp-util","package.json"]
   },
   "files": [
     "gulpfile.ts"

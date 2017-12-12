@@ -7,7 +7,7 @@
     "url": "https://github.com/dmike16/lab1100"
   },
   "scripts": {
-    "info": "gulp",
+    "info": "gulp lab1100:info",
     "start": "gulp serve",
     "build": "gulp build",
     "prod": "gulp build:aot",

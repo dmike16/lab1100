@@ -1,6 +1,6 @@
-import {task} from 'gulp';
-import {log} from 'gulp-util';
-import InfoPackage from './packages/InfoPackage';
+import createInfoTask from './tasks/info-task';
+import { infoPack } from './packages';
 
-task('default',()=>{
-});
+createInfoTask(infoPack);
+
+import  './tasks/default';

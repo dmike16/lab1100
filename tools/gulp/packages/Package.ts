@@ -8,19 +8,25 @@ export default abstract class Package{
 
   constructor(protected name:string,protected dependencies?: Package[]){}
 
-  get getname(): string{
+  getName(): string{
     return this.name;
   }
 
-  get getdeps(): Package[]{
+  getDepsPackages(): Package[]{
     return this.dependencies;
+  }
+
+  getDepsTasks():string[]{
+    return this.dependencies.map((p) =>{
+      return p.getName();
+    });
   }
 
   resolveInProject(...path: string[]):string{
     return join(root,...path);
   }
 
-  abstract getConfig():{};
+  abstract getConfig():{[prop:string]:any};
 }
 
 export const root :string = resolve(__dirname,'../../../');

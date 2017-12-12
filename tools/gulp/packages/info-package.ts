@@ -1,5 +1,6 @@
 import Package from './Package';
 import {log,colors} from 'gulp-util';
+
 import * as data from '../../../package.json';
 
 export default class InfoPackage extends Package{
@@ -7,14 +8,11 @@ export default class InfoPackage extends Package{
     super(name,dependencies);
   }
 
-  getConfig():{}{
-    return {}
-  }
-
-  info():void{
-    log(colors.blue(data.name));
-    log(colors.green(data.description));
-    log(colors.red(data.author.email));
-    log(colors.red(data.repository.url));
+  getConfig():{[prop:string]:any}{
+    return {
+      'blue': [data.name],
+      'green': [data.description],
+      'red':[data.author.email,data.repository.url]
+    }
   }
 }
