@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 import InfoPackage from './packages/info-package';
 import {
   WebpackBuildProdPackage,
@@ -7,5 +9,11 @@ import {
 
 export const infoPack = new InfoPackage('lab1100');
 export const webpackBuildPack = new WebpackBuildProdPackage('lab1100');
+
 export const webpackServePack = new WebpackServePackage('lab1100');
+webpackServePack.https = {
+  key: readFileSync(webpackServePack.resolveInProject('tools/ssl/ssl.key')),
+  cert: readFileSync(webpackServePack.resolveInProject('tools/ssl/ssl.crt'))
+}
+
 export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
