@@ -1,35 +1,34 @@
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import ExtractTextPlugin = require('extract-text-webpack-plugin');
 import {
   ContextReplacementPlugin,
-  CommonsChunkPlugin,
   NoEmitOnErrorsPlugin,
   HashedModuleIdsPlugin,
-  UglifyJsPlugin,
+  optimize,
   DefinePlugin,
-  ProgressPlugin
+  ProgressPlugin,
+  Configuration
 } from 'webpack';
-import merge from 'webpack-merge';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import CleanWebpackPlugin from 'clean-webpack-plugin';
-import {AngularCompilerPlugin} from '@ngtools/webpack';
-import {version,name} from '../../../package.json';
+import merge = require('webpack-merge');
+import HtmlWebpackPlugin = require('html-webpack-plugin');
+import CleanWebpackPlugin = require('clean-webpack-plugin');
+import { AngularCompilerPlugin } from '@ngtools/webpack';
+import { version, name } from '../../../package.json';
 
 import Package from './package';
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const VERSION = version;
 const PROJECT_NAME = name;
-
-abstract class WebpackCommonPackage extends Package {
-  constructor(name:string,dependencies?: Package[]){
-      super(`${name}:webpack`,dependencies);
+export abstract class WebpackCommonPackage extends Package {
+  constructor(name: string, dependencies?: Package[]) {
+    super(`${name}:webpack`, dependencies);
   }
 
-  getRules():[any]{
+  getRules(): [any] {
     return null;
   }
 
-  getConfig(): {[prop:string]:any} {
+  getConfig(): Configuration {
     return {
       // Entry Points
       entry: {
@@ -90,8 +89,8 @@ abstract class WebpackCommonPackage extends Package {
           {}
         ),
         //Optimize common dependencies
-        new CommonsChunkPlugin({
-          name: ['app', 'vendor', 'polyfills']
+        new optimize.CommonsChunkPlugin({
+          names: ['app', 'vendor', 'polyfills']
         }),
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
@@ -118,7 +117,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
     }]
   }
 
-  getConfig(): {[prop:string]:any} {
+  getConfig(): Configuration {
     return merge(super.getConfig(), {
       devtool: 'source-map',
 
@@ -140,16 +139,15 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         }),
         new NoEmitOnErrorsPlugin(),
         new HashedModuleIdsPlugin(),
-        new CommonsChunkPlugin({
+        new optimize.CommonsChunkPlugin({
           name: 'boilerplate'
         }),
-        new UglifyJsPlugin({
+        new optimize.UglifyJsPlugin({
           sourceMap: true,
-          uglifyOptions: {
-            mangle: {
-              keep_fnames: true
-            }
+          mangle: {
+            keep_fnames: true
           }
+
         }),
         new ExtractTextPlugin('[name].[chunkhash].css'),
         new DefinePlugin({
@@ -165,23 +163,23 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
   }
 }
 
-export class WebpackBuildAOTPackage extends WebpackBuildProdPackage{
-  constructor(name:string,dependencies?: Package[]){
-      super(`${name}:aot`,dependencies);
+export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
+  constructor(name: string, dependencies?: Package[]) {
+    super(`${name}:aot`, dependencies);
   }
 
-  getRules():[any]{
+  getRules(): [any] {
     return [{
       test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
       loader: '@ngtools/webpack'
     }];
   }
-  getConfig():{[prop:string]:any}{
-    return merge(super.getConfig,{
-      plugins:[
+  getConfig(): Configuration {
+    return merge(super.getConfig(), {
+      plugins: [
         new AngularCompilerPlugin({
-          tsConfigPath: this.resolveInProject('src','tsconfig.json'),
-          entryModule: this.resolveInProject('src','app','app.module#AppModule'),
+          tsConfigPath: this.resolveInProject('src', 'tsconfig.json'),
+          entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
           sourceMap: true
         })
       ]
@@ -189,12 +187,11 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage{
   }
 }
 
-export class WebpackServePackage extends WebpackCommonPackage{
-  constructor(name:string,dependencies?: Package[]){
-      super(`${name}:serve`,dependencies);
-  }
+export class WebpackServePackage extends WebpackCommonPackage {
+  public https: any = true;
 
-  getRules():[any]{
+
+  getRules(): [any] {
     return [{
       test: /\.ts$/,
       use: [{
@@ -208,8 +205,8 @@ export class WebpackServePackage extends WebpackCommonPackage{
     }]
   }
 
-  getConfig():{[prop:string]:any}{
-    return merge(super.getConfig,{
+  getConfig(): Configuration {
+    return merge(super.getConfig(), {
       devtool: 'cheap-module-eval-source-map',
 
       output: {
@@ -225,11 +222,11 @@ export class WebpackServePackage extends WebpackCommonPackage{
           {
             test: /\.ts$/,
             use: [{
-                loader: 'awesome-typescript-loader',
-                options: {
-                  configFileName: this.resolveInProject('src', 'tsconfig.json')
-                }
-              },
+              loader: 'awesome-typescript-loader',
+              options: {
+                configFileName: this.resolveInProject('src', 'tsconfig.json')
+              }
+            },
               'angular2-template-loader'
             ]
           }
@@ -243,7 +240,9 @@ export class WebpackServePackage extends WebpackCommonPackage{
       devServer: {
         historyApiFallback: true,
         stats: 'minimal',
-        https: true
+        https: (this.https === true ? true : this.https ? this.https : false),
+        host: 'localhost',
+        port: 4200
       }
     });
   }
