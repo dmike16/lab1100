@@ -19,6 +19,9 @@ import Package from './package';
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const VERSION = version;
 const PROJECT_NAME = name;
+/**
+ * Common class to all webpack packages
+ */
 export abstract class WebpackCommonPackage extends Package {
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:webpack`, dependencies);
@@ -100,7 +103,10 @@ export abstract class WebpackCommonPackage extends Package {
     }
   }
 }
-
+/**
+ * Build webpack package
+ *
+ */
 export class WebpackBuildProdPackage extends WebpackCommonPackage {
 
   getRules(): [any] {
@@ -162,7 +168,9 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
     });
   }
 }
-
+/**
+ * AOT build package
+ */
 export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:aot`, dependencies);
@@ -186,7 +194,9 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     })
   }
 }
-
+/**
+ * Serve webpack server pacakge
+ */
 export class WebpackServePackage extends WebpackCommonPackage {
   public https: any = true;
 

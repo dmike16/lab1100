@@ -16,9 +16,10 @@ export default abstract class Package{
     return this.dependencies;
   }
 
-  getDepsTasks():string[]{
+  getDepsTasks(phase?:string):string[]{
+    const suffix = (phase)?`:${phase}`:'';
     return this.dependencies.map((p) =>{
-      return p.getName();
+      return `${p.getName()}${suffix}`;
     });
   }
 

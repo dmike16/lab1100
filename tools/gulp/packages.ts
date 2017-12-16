@@ -6,6 +6,7 @@ import {
   WebpackBuildAOTPackage,
   WebpackServePackage
 } from './packages/webpack-package';
+import ZipPackage from './packages/zip-package';
 
 export const infoPack = new InfoPackage('lab1100');
 export const webpackBuildPack = new WebpackBuildProdPackage('lab1100');
@@ -17,3 +18,4 @@ webpackServePack.https = {
 }
 
 export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
+export const zipPack = new ZipPackage('lab1100', [webpackAOTPack]);
