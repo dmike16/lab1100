@@ -40,8 +40,7 @@ function _exit_code() {
 
 function _build_tree() {
   local tools
-  local config
-  local gulp_task
+  local gulp
   local src
   local app
   local assets
@@ -49,8 +48,7 @@ function _build_tree() {
   local images
 
   tools=${PWD}/tools
-  config=${tools}/config
-  gulp_task=${tools}/gulp-task
+  gulp=${tools}/gulp
   src=${PWD}/src
   app=${src}/app
   assets=${src}/assets
@@ -83,12 +81,8 @@ function _build_tree() {
   mkdir -p "${src}"
   _exit_code $? "mkdir"
 
-  logging__info "Create config direcotry"
-  mkdir -p "${config}"
-  _exit_code $? "mkdir"
-
-  logging__info "Create gulp-task direcotry"
-  mkdir -p "${gulp_task}"
+  logging__info "Create gulp direcotry"
+  mkdir -p "${gulp}"
   _exit_code $? "mkdir"
 
   logging__info "Create assets direcotry"
@@ -107,29 +101,13 @@ function _build_tree() {
   mkdir -p "${app}"
   _exit_code $? "mkdir"
 
-  logging__info "Create helper.js"
-  setup__path_helper "${config}"
-  _exit_code $? "setup__path_helper"
-
-  logging__info "Create webpack.common.js"
-  setup__config_common "${config}"
-  _exit_code $? "setup__config_common"
-
-  logging__info "Create webpack.dev.js"
-  setup__config_dev "${config}"
-  _exit_code $? "setup__config_dev"
-
-  logging__info "Create webpack.prod.js"
-  setup__config_production "${config}" "${1}"
-  _exit_code $? "setup__config_production"
+  logging__info "Create gulp setup"
+  setup__gulp_setup "${PWD}" "${gulp}"
+  _exit_code $? "setup__gulp_setup"
 
   logging__info "Create tsconfig.json"
   setup__typescript_config "${src}"
   _exit_code $? "setup__typescript_config"
-
-  logging__info "Create gulp setup"
-  setup__gulp_setup "${PWD}" "${gulp_task}"
-  _exit_code $? "setup__gulp_setup"
 
   logging__info "Create polyfill.ts"
   setup__polyfill_ts "${src}"

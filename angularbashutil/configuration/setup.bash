@@ -527,134 +527,563 @@ APPMODULE
 #  Cat exit status
 # ============================================================================ #
 function setup__gulp_setup() {
-  ## gulpfile
-  cat > ${1}/gulpfile.js <<GULP
-/**
- * Gulp file configuration
- */
-const gulp = require('gulp');
+  ## gulpfile js
+  cat > ${1}/gulpfile.js <<GULPJS
+  /**
+   * Gulp file usgin ts-node + typescript
+   */
+  const path = require('path');
+  const tsconfigPath = path.join(__dirname,'tools/gulp/tsconfig.json');
 
-function loadTask(fileName,taskName){
-  let task = require(\`./tools/gulp-task/\${fileName}\`);
-  let tn = taskName || 'default';
-  return task[tn](gulp);
+  require('ts-node').register({
+    project: tsconfigPath
+  });
+  require('./tools/gulp/gulpfile');
+GULPJS
+  ## gulpfile ts
+  cat > ${2}/gulpfile.ts <<GULPTS
+import createInfoTask from './tasks/info-task';
+import { createServeWebpackTask } from './tasks/serve-task';
+import { createBuildWebpackTask } from './tasks/build-task';
+import { createZipDistTask } from './tasks/dist-task';
+
+import { infoPack, webpackServePack, webpackBuildPack, webpackAOTPack, zipPack } from './packages';
+
+createInfoTask(infoPack);
+createServeWebpackTask(webpackServePack);
+createBuildWebpackTask(webpackBuildPack);
+createBuildWebpackTask(webpackAOTPack);
+createZipDistTask(zipPack);
+
+import './tasks/default';
+GULPTS
+  ## package.ts
+  cat > ${2}/packages.ts <<PACKS
+import InfoPackage from './packages/info-package';
+import {
+  WebpackBuildProdPackage,
+  WebpackBuildAOTPackage,
+  WebpackServePackage
+} from './packages/webpack-package';
+import ZipPackage from './packages/zip-package';
+
+export const infoPack = new InfoPackage('lab1100');
+export const webpackBuildPack = new WebpackBuildProdPackage('lab1100');
+
+export const webpackServePack = new WebpackServePackage('lab1100');
+
+export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
+export const zipPack = new ZipPackage('lab1100', [webpackAOTPack]);
+PACKS
+  ## gulp tsconf
+  cat > ${2}/tsconfig.json <<GTSCONF
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "lib": [
+      "ES6", "ES2015"
+    ],
+    "typeRoots": ["./node_modules", "./types"],
+    "types": ["node", "gulp", "gulp-util", "package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
+      "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip"
+    ]
+  },
+  "files": [
+    "gulpfile.ts"
+  ]
+}
+GTSCONF
+  local packs="${2}/packages"
+  local tasks="${2}/tasks"
+  local types="${2}/types"
+  ## packages
+  mkdir -p ${packs} || return $?
+  cat > ${packs}/package.ts <<PACKAGES
+import {resolve,join} from 'path';
+/**
+ * Abstract Package class
+ * @param  {string}   name         [package name]
+ * @param  {Package[]} dependencies [dependencies]
+ */
+export default abstract class Package{
+
+  constructor(protected name:string,protected dependencies?: Package[]){}
+
+  getName(): string{
+    return this.name;
+  }
+
+  getDepsPackages(): Package[]{
+    return this.dependencies;
+  }
+
+  getDepsTasks(phase?:string):string[]{
+    const suffix = (phase)?\`:\${phase}\`:'';
+    return this.dependencies.map((p) =>{
+      return \`\${p.getName()}\${suffix}\`;
+    });
+  }
+
+  resolveInProject(...path: string[]):string{
+    return join(root,...path);
+  }
+
+  abstract getConfig():{[prop:string]:any};
 }
 
-gulp.task('default',loadTask('default'));
-gulp.task('serve',loadTask('serve'));
-gulp.task('build',loadTask('build'));
-gulp.task('build:aot',loadTask('build','aot'));
-gulp.task('build:pack',['build:aot'],loadTask('build','pack'));
-GULP
-  ## default task
-  cat > ${2}/default.js <<DEFAULT
-/**
- * Default gulp task
- */
-const helper = require('../config/helper');
-const info = require(helper.root('package.json'));
-const gutil = require('gulp-util');
+export const root :string = resolve(__dirname,'../../../');
+PACKAGES
+  ## info pack
+  cat > ${packs}/info-package.ts <<INFO
+import Package from './package';
+import {log,colors} from 'gulp-util';
 
-exports.default = (gulp)=>()=>{
-  gutil.log(gutil.colors.blue(info.name));
-  gutil.log(gutil.colors.green(info.description));
-  gutil.log(gutil.colors.red(info.author.email));
-  gutil.log(gutil.colors.red(info.repository.url));
-};
-DEFAULT
-  ## serve task
-  cat > ${2}/serve.js <<SERVE
-/**
- * Gulp serve task
- */
+import * as data from '../../../package.json';
 
-function closeOnSign(closable, signs, callback) {
-  if (typeof closable.close === 'function') {
-    let onSign = () => {
-      callback();
-      closable.close(() => {
-        process.exit();
-      });
-    };
-    for (let sign of [...signs]) {
-      process.on(sign, onSign);
+export default class InfoPackage extends Package{
+  constructor(name:string,dependencies?:Package[]){
+    super(name,dependencies);
+  }
+
+  getConfig():{[prop:string]:any}{
+    return {
+      'blue': [data.name],
+      'green': [data.description],
+      'red':[data.author.email,data.repository.url]
     }
   }
 }
+INFO
+  ## webpack pack
+  cat > ${packs}/webpack-package.ts <<WEBPACK
+import ExtractTextPlugin = require('extract-text-webpack-plugin');
+import {
+  ContextReplacementPlugin,
+  NoEmitOnErrorsPlugin,
+  HashedModuleIdsPlugin,
+  optimize,
+  DefinePlugin,
+  ProgressPlugin,
+  Configuration
+} from 'webpack';
+import merge = require('webpack-merge');
+import HtmlWebpackPlugin = require('html-webpack-plugin');
+import CleanWebpackPlugin = require('clean-webpack-plugin');
+import { AngularCompilerPlugin } from '@ngtools/webpack';
+import { version, name } from '../../../package.json';
 
-exports.default = (gulp) => (cb) => {
-  const devConfig = require('../config/webpack.dev');
-  const webpack = require('webpack');
-  const gutil = require('gulp-util');
-  const WebpackDevServer = require('webpack-dev-server');
-  //Extract and add some devServer config options
-  const devServer = Object.assign({}, devConfig.devServer, {
-    host: 'localhost',
-    port: 4200,
-    publicPath: devConfig.output.publicPath
-  });
-  //Create a server entry point to broswer reload
-  WebpackDevServer.addDevServerEntrypoints(devConfig, devServer);
-  //Initialite webpack compiler
-  const compiler = webpack(devConfig);
-  //Apply progress bar plugin
-  compiler.apply(new webpack.ProgressPlugin());
-  //Create the server instance
-  const server = new WebpackDevServer(compiler, devServer);
-  //Close serve un SIGINT,SIGTERM event
-  closeOnSign(server, ['SIGINT', 'SIGTERM'], cb);
-  server.listen(devServer.port, devServer.host, (err) => {
-    if (err) {
-      throw err;
-    } else {
-      let domain = [
-        (devServer.https ? 'https' : 'http'),
-        '://', devServer.host, ':', devServer.port
-      ];
-      gutil.log(' ');
-      gutil.log(gutil.colors.green('Application serving at'));
-      gutil.log(gutil.colors.green(domain.join('')));
+import Package from './package';
+
+const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const VERSION = version;
+const PROJECT_NAME = name;
+/**
+ * Common class to all webpack packages
+ */
+export abstract class WebpackCommonPackage extends Package {
+  constructor(name: string, dependencies?: Package[]) {
+    super(\`\${name}:webpack\`, dependencies);
+  }
+
+  getRules(): [any] {
+    return null;
+  }
+
+  getConfig(): Configuration {
+    return {
+      // Entry Points
+      entry: {
+        'polyfills': './src/polyfills.ts',
+        'vendor': './src/vendor.ts',
+        'app': './src/main.ts'
+      },
+      // Ext to resolve when is not specified
+      resolve: {
+        extensions: ['.ts', '.js']
+      },
+      //Module section
+      module: {
+        rules: [
+          //Html rule
+          {
+            test: /\.html$/,
+            use: {
+              loader: 'html-loader',
+              options: { minimize: false }
+            }
+          },
+          //Image and fonts rule
+          {
+            test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+            use: ['file-loader?name=assets/[name].[hash].[ext]']
+          },
+          //Css in assets rule
+          {
+            test: /\.scss$/,
+            exclude: this.resolveInProject('src', 'app'),
+            use: ExtractTextPlugin.extract({
+              fallback: 'style-loader',
+              use: [{
+                loader: 'css-loader',
+                options: { sourceMap: true }
+              },
+              {
+                loader: 'sass-loader',
+                options: { sourceMap: true }
+              }]
+            })
+          },
+          // Css in app folder rule
+          {
+            test: /.scss$/,
+            include: this.resolveInProject('src', 'app'),
+            use: ['raw-loader', 'sass-loader']
+          }
+        ]
+      },
+
+      plugins: [
+        //Fix an angular2 warning
+        new ContextReplacementPlugin(
+          /angular(\\\\|\/)core(\\\\|\/)(@angular|esm5)/,
+          this.resolveInProject('./src'),
+          {}
+        ),
+        //Optimize common dependencies
+        new optimize.CommonsChunkPlugin({
+          names: ['app', 'vendor', 'polyfills']
+        }),
+        // Fill the index.html with buldle geneated
+        new HtmlWebpackPlugin({
+          template: 'src/index.html'
+        })
+      ]
+    }
+  }
+}
+/**
+ * Build webpack package
+ *
+ */
+export class WebpackBuildProdPackage extends WebpackCommonPackage {
+
+  getRules(): [any] {
+    return [{
+      test: /\.ts$/,
+      use: [{
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: this.resolveInProject('src', 'tsconfig.json')
+        }
+      },
+        'angular2-template-loader'
+      ]
+    }]
+  }
+
+  getConfig(): Configuration {
+    return merge(super.getConfig(), {
+      devtool: 'source-map',
+
+      output: {
+        path: this.resolveInProject('build'),
+        publicPath: '/lab1100/',
+        filename: '[name].[chunkhash].js',
+        chunkFilename: '[id].[chunkhash].chunk.js'
+      },
+
+      module: {
+        rules: this.getRules()
+      },
+
+      plugins: [
+        //Clean dist on rebuild
+        new CleanWebpackPlugin([this.resolveInProject('build')], {
+          allowExternal: true
+        }),
+        new NoEmitOnErrorsPlugin(),
+        new HashedModuleIdsPlugin(),
+        new optimize.CommonsChunkPlugin({
+          name: 'boilerplate'
+        }),
+        new optimize.UglifyJsPlugin({
+          sourceMap: true,
+          mangle: {
+            keep_fnames: true
+          }
+
+        }),
+        new ExtractTextPlugin('[name].[chunkhash].css'),
+        new DefinePlugin({
+          'process.env': {
+            'ENV': JSON.stringify(ENV),
+            'VERSION': JSON.stringify(VERSION),
+            'PROJECT_NAME': JSON.stringify(PROJECT_NAME)
+          }
+        }),
+        new ProgressPlugin()
+      ]
+    });
+  }
+}
+/**
+ * AOT build package
+ */
+export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
+  constructor(name: string, dependencies?: Package[]) {
+    super(\`\${name}:aot\`, dependencies);
+  }
+
+  getRules(): [any] {
+    return [{
+      test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+      loader: '@ngtools/webpack'
+    }];
+  }
+  getConfig(): Configuration {
+    return merge(super.getConfig(), {
+      plugins: [
+        new AngularCompilerPlugin({
+          tsConfigPath: this.resolveInProject('src', 'tsconfig.json'),
+          entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
+          sourceMap: true
+        })
+      ]
+    })
+  }
+}
+/**
+ * Serve webpack server pacakge
+ */
+export class WebpackServePackage extends WebpackCommonPackage {
+  public https: any = true;
+
+
+  getRules(): [any] {
+    return [{
+      test: /\.ts$/,
+      use: [{
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: this.resolveInProject('src', 'tsconfig.json')
+        }
+      },
+        'angular2-template-loader'
+      ]
+    }]
+  }
+
+  getConfig(): Configuration {
+    return merge(super.getConfig(), {
+      devtool: 'cheap-module-eval-source-map',
+
+      output: {
+        path: this.resolveInProject('dist'),
+        publicPath: '/',
+        filename: '[name].js',
+        chunkFilename: '[id].chunk.js'
+      },
+
+      module: {
+        rules: [
+          //typescript rule
+          {
+            test: /\.ts$/,
+            use: [{
+              loader: 'awesome-typescript-loader',
+              options: {
+                configFileName: this.resolveInProject('src', 'tsconfig.json')
+              }
+            },
+              'angular2-template-loader'
+            ]
+          }
+        ]
+      },
+
+      plugins: [
+        new ExtractTextPlugin('[name].css')
+      ],
+
+      devServer: {
+        historyApiFallback: true,
+        stats: 'minimal',
+        https: (this.https === true ? true : this.https ? this.https : false),
+        host: 'localhost',
+        port: 4200
+      }
+    });
+  }
+}
+WEBPACK
+  ## zip pack
+  cat > ${packs}/zip-package.ts <<ZIPACK
+import Package from './package';
+import { root } from './package';
+
+export default class ZipPackage extends Package {
+
+  getConfig(): { [prop: string]: any } {
+    return {
+      source: \`\${root}/build/**/*\`,
+      name: \`\${this.name}.zip\`,
+      target: \`\${root}/build/Release\`
+    };
+  }
+}
+ZIPACK
+  ## tasks
+  mkdir -p "${tasks}" || return $?
+  ## default
+  cat > ${tasks}/default.ts <<DEFAULT
+import {task} from 'gulp';
+import {log,colors} from 'gulp-util';
+
+task('default',()=>{
+  log(colors.yellow('      === GULP ===     '));
+  log(colors.yellow('Default gulp tasks.'));
+  log(colors.yellow('Read the package json script prop'));
+  log(colors.yellow('to find out the runnable tasks'));
+  log(colors.yellow('      === GULP ===     '));
+});
+DEFAULT
+  ## info
+  cat > ${tasks}/info-task.ts <<INFO
+import {task} from 'gulp';
+import {log,colors} from 'gulp-util';
+
+import InfoPackage from '../packages/info-package';
+
+export default function createInfoTask(infoPack: InfoPackage):void{
+  const config = infoPack.getConfig();
+  const color:{[p:string]:any} = {
+    'blue': colors.blue,
+    'red':colors.red,
+    'green':colors.green
+  }
+  task(\`\${infoPack.getName()}:info\`,async ()=>{
+    for(let key in config){
+      config[key].forEach((value:any)=>{
+        log(color[key](value));
+      });
     }
   });
-};
-SERVE
-  ## build task
-  cat > ${2}/build.js <<BUILD
-/**
- * Gulp build task
- */
+}
+INFO
+  ## serve
+  cat > ${tasks}/serve-tasks.ts <<SERVE
+import { task } from 'gulp';
+import { log, colors } from 'gulp-util';
+import webpack = require('webpack');
+import WebpackDevServer = require('webpack-dev-server');
 
-function builProcess(gulp,configuration,cb){
-  const webpack = require('webpack');
-  const webpackStream = require('webpack-stream');
-  const pump = require('pump');
-  const helper = require('../config/helper');
-  const src = helper.root('src');
+import { WebpackServePackage } from '../packages/webpack-package';
 
-  pump([
-    gulp.src([`${src}/main.ts`,`${src}/polyfills.ts`,`${src}/vendor.ts`]),
-    webpackStream(configuration,webpack),
-    gulp.dest(helper.root('build'))
-  ],cb);
+export function createServeWebpackTask(servePack: WebpackServePackage): void {
+    task(\`\${servePack.getName()}:serve\`, (cb: (err?:any) => void) => {
+        const config: webpack.Configuration= servePack.getConfig();
+        //Create a server entry point to broswer reload
+        WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
+        //Initialite webpack compiler
+        const compiler = webpack(config);
+        //Apply progress bar plugin
+        compiler.apply(new webpack.ProgressPlugin());
+        //Create the server instance
+        const server = new WebpackDevServer(compiler, config.devServer);
+        //Close serve un SIGINT,SIGTERM event
+        closeOnSign(server, ['SIGINT', 'SIGTERM'], cb);
+        server.listen(config.devServer.port, config.devServer.host, (err:any) => {
+            if (err) {
+                throw err;
+            } else {
+                const domain = [
+                    (servePack.https ? 'https' : 'http'),
+                    '://', config.devServer.host, ':', config.devServer.port
+                ];
+                log(' ');
+                log(colors.green('Application serving at'));
+                log(colors.green(domain.join('')));
+            }
+        });
+    });
 }
 
-exports.default = (gulp) => (cb) => {
-  const prodaction = require('../config/webpack.prod');
+function closeOnSign(closable: { close: (cb?:Function) => void }, signs: any[], callback: (err?:any) => void) {
+    let onSign = () => {
+        callback();
+        closable.close(() => {
+            process.exit();
+        });
+    };
+    for (let sign of [...signs]) {
+        process.on(sign, onSign);
+    }
+}
+SERVE
+  ## build task
+  cat > ${tasks}/build-task.ts <<BUILD
+import {task,src,dest} from 'gulp';
+import webpack = require('webpack');
+import webpackStream = require('webpack-stream');
+import pump = require('pump');
 
-  builProcess(gulp,prodaction,cb);
-};
+import {WebpackBuildProdPackage} from '../packages/webpack-package';
 
-exports.aot = (gulp) => (cb) => {
-  const prodAOT = require('../config/webpack.prod.aot');
-
-  builProcess(gulp,prodAOT,cb);
-};
-
-exports.pack = (gulp) => () => {
-  const gutil = require('gulp-util');
-  gutil.log('TO DO');
-};
+export function createBuildWebpackTask(buildPack: WebpackBuildProdPackage){
+  const source = buildPack.resolveInProject('src');
+  const target = buildPack.resolveInProject('build');
+  task(\`\${buildPack.getName()}:build\`,(cb:(err?:any)=>void)=>{
+    pump([
+      src([\`\${source}/main.ts\`,\`\${source}/polyfills.ts\`,\`\${source}/vendor.ts\`]),
+      webpackStream(buildPack.getConfig(),webpack),
+      dest(target)
+    ],cb);
+  });
+}
 BUILD
+  ## dist
+  cat > ${tasks}/dist-task.ts <<DIST
+import { task, src, dest } from 'gulp';
+import runSeq = require('run-sequence');
+import pump = require('pump');
+import zip = require('gulp-zip');
+
+import ZipPackage from '../packages/zip-package';
+
+export function createZipDistTask(zipPack: ZipPackage) {
+    const config = zipPack.getConfig();
+    task(\`\${zipPack.getName()}:zip\`, (cb) => {
+        runSeq(zipPack.getDepsTasks('build'), () => {
+            createArchive(zipPack.getConfig(), cb);
+        });
+    });
+}
+
+function createArchive(config: { [prop: string]: any }, cb: (err?: any) => void) {
+    pump([
+        src(config.source),
+        zip(config.name),
+        dest(config.target)
+    ], cb);
+}
+DIST
+  ## types
+  mkdir -p ${types} || return $?
+  ## json
+  cat > ${types}/json.d.ts <<JSON
+declare module "*.json"{
+  const value: any;
+  export default value;
+}
+JSON
   return $?
 }
 
