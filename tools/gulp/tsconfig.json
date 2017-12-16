@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "lib": [
+      "ES6", "ES2015"
+    ],
+    "typeRoots": ["./node_modules", "./types"],
+    "types": ["node", "gulp", "gulp-util", "package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
+      "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip"
+    ]
+  },
+  "files": [
+    "gulpfile.ts"
+  ]
+}
