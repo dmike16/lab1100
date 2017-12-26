@@ -66,7 +66,7 @@ module.exports = {
         use:[
           {
             loader: 'awesome-typescript-loader',
-            options:{configFileName:helper.root('src','tsconfig.json')}
+            options:{configFileName:helper.root('src','tsconfig.app.json')}
           },
           'angular2-template-loader'
         ]
@@ -204,7 +204,7 @@ function setup__config_production() {
           use: [{
               loader: 'awesome-typescript-loader',
               options: {
-                configFileName: helper.root('src', 'tsconfig.json')
+                configFileName: helper.root('src', 'tsconfig.app.json')
               }
             },
             'angular2-template-loader'
@@ -281,7 +281,7 @@ module.exports = webpackMerge(common, {
 
   plugins: [
     new AngularCompilerPlugin({
-      tsConfigPath: helper.root('src','tsconfig.json'),
+      tsConfigPath: helper.root('src','tsconfig.app.json'),
       entryModule: helper.root('src','app','app.module#AppModule'),
       sourceMap: true
     }),
@@ -333,24 +333,70 @@ PACKAGE
 #  cat exit statuts
 # ============================================================================ #
 function setup__typescript_config() {
-  cat > ${1}/tsconfig.json <<TSCONFIG
+  cat > ./tsconfig.json <<TSCONFIG
   {
+    "compileOnSave": false,
     "compilerOptions": {
-      "target": "es5",
-      "module": "ES6",
-      "moduleResolution": "node",
+      "outDir": "./build/out-tsc",
       "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "node",
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "lib": ["es2015", "dom"],
       "noImplicitAny": true,
-      "suppressImplicitAnyIndexErrors": true
+      "target": "es5",
+      "typeRoots": [
+        "node_modules/@types"
+      ],
+      "lib": [
+        "es2017",
+        "dom"
+      ]
     },
-    "angularCompilerOptions":{
-      "strictMetadataEmit": true
+    "angularCompilerOptions": {
+      "preserveWhitespaces": false
     }
   }
 TSCONFIG
+
+cat > ${1}/tsconfig.app.json <<TSCONFIG_APP
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "ES6",
+    "types": ["node"]
+  },
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}
+TSCONFIG_APP
+
+cat > ${1}/tsconfig.spec.json <<TSCONFIG_SPEC
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/spec",
+    "module": "ES6",
+    "target": "es5",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+  "files": [
+    "test.ts"
+  ],
+  "include": [
+    "**/*.spec.ts",
+    "**/*.d.ts"
+  ]
+}
+TSCONFIG_SPEC
 }
 
 # ============================================================================ #
@@ -591,7 +637,7 @@ PACKS
     "lib": [
       "ES6", "ES2015"
     ],
-    "typeRoots": ["./node_modules", "./types"],
+    "typeRoots": ["./node_modules/@types", "./types"],
     "types": ["node", "gulp", "gulp-util", "package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
       "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip"
     ]
@@ -781,7 +827,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -852,7 +898,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     return merge(super.getConfig(), {
       plugins: [
         new AngularCompilerPlugin({
-          tsConfigPath: this.resolveInProject('src', 'tsconfig.json'),
+          tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
           entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
           sourceMap: true
         })
@@ -873,7 +919,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -900,7 +946,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
             use: [{
               loader: 'awesome-typescript-loader',
               options: {
-                configFileName: this.resolveInProject('src', 'tsconfig.json')
+                configFileName: this.resolveInProject('src', 'tsconfig.app.json')
               }
             },
               'angular2-template-loader'

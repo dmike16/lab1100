@@ -91,10 +91,6 @@ export abstract class WebpackCommonPackage extends Package {
           this.resolveInProject('./src'),
           {}
         ),
-        //Optimize common dependencies
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
           template: 'src/index.html'
@@ -115,7 +111,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -146,7 +142,11 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         new NoEmitOnErrorsPlugin(),
         new HashedModuleIdsPlugin(),
         new optimize.CommonsChunkPlugin({
-          name: 'boilerplate'
+          names: ['app', 'vendor', 'polyfills']
+        }),
+        new optimize.CommonsChunkPlugin({
+          name: 'boilerplate',
+          minChunks: Infinity
         }),
         new optimize.UglifyJsPlugin({
           sourceMap: true,
@@ -186,7 +186,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     return merge(super.getConfig(), {
       plugins: [
         new AngularCompilerPlugin({
-          tsConfigPath: this.resolveInProject('src', 'tsconfig.json'),
+          tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
           entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
           sourceMap: true
         })
@@ -207,7 +207,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -227,24 +227,14 @@ export class WebpackServePackage extends WebpackCommonPackage {
       },
 
       module: {
-        rules: [
-          //typescript rule
-          {
-            test: /\.ts$/,
-            use: [{
-              loader: 'awesome-typescript-loader',
-              options: {
-                configFileName: this.resolveInProject('src', 'tsconfig.json')
-              }
-            },
-              'angular2-template-loader'
-            ]
-          }
-        ]
+        rules: this.getRules()
       },
 
       plugins: [
-        new ExtractTextPlugin('[name].css')
+        new ExtractTextPlugin('[name].css'),
+        new optimize.CommonsChunkPlugin({
+          names: ['app', 'vendor', 'polyfills']
+        })
       ],
 
       devServer: {
@@ -254,6 +244,57 @@ export class WebpackServePackage extends WebpackCommonPackage {
         host: 'localhost',
         port: 4200
       }
+    });
+  }
+}
+/**
+ * Test webpack Karma package
+ */
+export class WebpackKarmaPackage extends WebpackCommonPackage
+ {
+  //TODO
+  getRules(): [any] {
+    return [{
+      test: /\.ts$/,
+      use: [{
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: this.resolveInProject('src', 'tsconfig.spec.json')
+        }
+      },
+        'angular2-template-loader'
+      ]
+    }];
+  }
+
+  getConfig(): Configuration{
+    const parent = super.getConfig();
+    delete parent.devServer;
+
+    return merge(parent,{
+      entry: {
+        'test': './src/test.ts'
+      },
+      devtool: 'cheap-module-eval-source-map',
+
+      output: {
+        path: this.resolveInProject('dist'),
+        publicPath: '/',
+        filename: '[name].js',
+        chunkFilename: '[id].chunk.js'
+      },
+
+      module: {
+        rules: this.getRules()
+      },
+
+      plugins: [
+        new ExtractTextPlugin('[name].css'),
+        new optimize.CommonsChunkPlugin({
+          names: ['app', 'vendor', 'polyfills','test','src/test.ts']
+        }),
+        new ProgressPlugin()
+      ]
     });
   }
 }

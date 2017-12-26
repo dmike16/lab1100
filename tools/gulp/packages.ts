@@ -4,7 +4,8 @@ import InfoPackage from './packages/info-package';
 import {
   WebpackBuildProdPackage,
   WebpackBuildAOTPackage,
-  WebpackServePackage
+  WebpackServePackage,
+  WebpackKarmaPackage
 } from './packages/webpack-package';
 import ZipPackage from './packages/zip-package';
 
@@ -19,3 +20,4 @@ webpackServePack.https = {
 
 export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
 export const zipPack = new ZipPackage('lab1100', [webpackAOTPack]);
+export const KarmaPack = new WebpackKarmaPackage('lab1100');
