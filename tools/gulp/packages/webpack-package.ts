@@ -90,15 +90,7 @@ export abstract class WebpackCommonPackage extends Package {
           /angular(\\|\/)core(\\|\/)(@angular|esm5)/,
           this.resolveInProject('./src'),
           {}
-        ),
-        //Optimize common dependencies
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
-        // Fill the index.html with buldle geneated
-        new HtmlWebpackPlugin({
-          template: 'src/index.html'
-        })
+        )
       ]
     }
   }
@@ -115,7 +107,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -146,7 +138,11 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         new NoEmitOnErrorsPlugin(),
         new HashedModuleIdsPlugin(),
         new optimize.CommonsChunkPlugin({
-          name: 'boilerplate'
+          names: ['app', 'vendor', 'polyfills']
+        }),
+        new optimize.CommonsChunkPlugin({
+          name: 'boilerplate',
+          minChunks: Infinity
         }),
         new optimize.UglifyJsPlugin({
           sourceMap: true,
@@ -162,6 +158,10 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
             'VERSION': JSON.stringify(VERSION),
             'PROJECT_NAME': JSON.stringify(PROJECT_NAME)
           }
+        }),
+        // Fill the index.html with buldle geneated
+        new HtmlWebpackPlugin({
+          template: 'src/index.html'
         }),
         new ProgressPlugin()
       ]
@@ -186,7 +186,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     return merge(super.getConfig(), {
       plugins: [
         new AngularCompilerPlugin({
-          tsConfigPath: this.resolveInProject('src', 'tsconfig.json'),
+          tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
           entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
           sourceMap: true
         })
@@ -207,7 +207,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       use: [{
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.json')
+          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
         }
       },
         'angular2-template-loader'
@@ -227,24 +227,18 @@ export class WebpackServePackage extends WebpackCommonPackage {
       },
 
       module: {
-        rules: [
-          //typescript rule
-          {
-            test: /\.ts$/,
-            use: [{
-              loader: 'awesome-typescript-loader',
-              options: {
-                configFileName: this.resolveInProject('src', 'tsconfig.json')
-              }
-            },
-              'angular2-template-loader'
-            ]
-          }
-        ]
+        rules: this.getRules()
       },
 
       plugins: [
-        new ExtractTextPlugin('[name].css')
+        new ExtractTextPlugin('[name].css'),
+        new optimize.CommonsChunkPlugin({
+          names: ['app', 'vendor', 'polyfills']
+        }),
+        // Fill the index.html with buldle geneated
+        new HtmlWebpackPlugin({
+          template: 'src/index.html'
+        })
       ],
 
       devServer: {
@@ -254,6 +248,78 @@ export class WebpackServePackage extends WebpackCommonPackage {
         host: 'localhost',
         port: 4200
       }
+    });
+  }
+}
+/**
+ * Test webpack Karma package
+ */
+export class WebpackKarmaPackage extends WebpackCommonPackage
+ {
+  getRules(): [any] {
+    return [
+      {
+        test: /\.ts$/,
+        use: [{
+          loader: 'awesome-typescript-loader',
+          options: {
+            configFileName: this.resolveInProject('src', 'tsconfig.spec.json')
+          }
+        },
+          'angular2-template-loader'
+        ]
+      },
+      //Html rule
+      {
+        test: /\.html$/,
+        use: {
+          loader: 'html-loader',
+          options: { minimize: false }
+        }
+      },
+      //Image and fonts rule
+      {
+        test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+        use: 'null-loader'
+      },
+      //Css in assets rule
+      {
+        test: /\.scss$/,
+        exclude: this.resolveInProject('src', 'app'),
+        use: 'null-loader'
+      },
+      // Css in app folder rule
+      {
+        test: /.scss$/,
+        include: this.resolveInProject('src', 'app'),
+        use: ['raw-loader', 'sass-loader']
+      }
+    ];
+  }
+
+  getConfig(): Configuration{
+    const parent = super.getConfig();
+    delete parent.entry;
+    delete parent.module;
+
+    return merge(parent,{
+      devtool: 'cheap-module-eval-source-map',
+
+      output: {
+        path: this.resolveInProject('dist'),
+        publicPath: '/',
+        filename: '[name].js',
+        chunkFilename: '[id].chunk.js'
+      },
+
+      module: {
+        rules: this.getRules()
+      },
+
+      plugins: [
+        new NoEmitOnErrorsPlugin(),
+        new ProgressPlugin()
+      ]
     });
   }
 }

@@ -1,4 +1,4 @@
-import Package from './Package';
+import Package from './package';
 import {log,colors} from 'gulp-util';
 
 import * as data from '../../../package.json';
