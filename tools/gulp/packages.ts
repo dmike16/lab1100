@@ -8,6 +8,7 @@ import {
   WebpackKarmaPackage
 } from './packages/webpack-package';
 import ZipPackage from './packages/zip-package';
+import E2eProtractorPackage from './packages/e2e-protractor';
 
 export const infoPack = new InfoPackage('lab1100');
 export const webpackBuildPack = new WebpackBuildProdPackage('lab1100');
@@ -20,4 +21,5 @@ webpackServePack.https = {
 
 export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
 export const zipPack = new ZipPackage('lab1100', [webpackAOTPack]);
-export const KarmaPack = new WebpackKarmaPackage('lab1100');
+export const karmaPack = new WebpackKarmaPackage('lab1100');
+export const e2ePack = new E2eProtractorPackage('lab1100');
