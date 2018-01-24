@@ -1,10 +1,11 @@
 import {task} from 'gulp';
-import {log,colors} from 'gulp-util';
+import { yellow } from 'ansi-colors';
+import log=require('fancy-log');
 
 task('default',()=>{
-  log(colors.yellow('      === GULP ===     '));
-  log(colors.yellow('Default gulp tasks.'));
-  log(colors.yellow('Read the package json script prop'));
-  log(colors.yellow('to find out the runnable tasks'));
-  log(colors.yellow('      === GULP ===     '));
+  log(yellow('      === GULP ===     '));
+  log(yellow('Default gulp tasks.'));
+  log(yellow('Read the package json script prop'));
+  log(yellow('to find out the runnable tasks'));
+  log(yellow('      === GULP ===     '));
 });

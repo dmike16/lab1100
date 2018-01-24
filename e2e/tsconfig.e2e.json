@@ -4,11 +4,14 @@
     "outDir": "../build/e2e",
     "baseUrl": "./",
     "module": "commonjs",
-    "target": "ES6",
+    "target": "es2015",
     "types": [
       "jasmine",
       "jasminewd2",
       "node"
     ]
-  }
+  },
+  "include": [
+    "homepage/**/*"
+  ]
 }

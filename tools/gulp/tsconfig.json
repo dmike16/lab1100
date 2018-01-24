@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ES6",
+    "target": "es2015",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
@@ -13,7 +13,7 @@
       "es6"
     ],
     "typeRoots": ["./node_modules", "./types"],
-    "types": ["node", "gulp", "gulp-util", "package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
+    "types": ["node", "gulp", "ansi-colors","package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
       "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip", "karma"
     ]
   },

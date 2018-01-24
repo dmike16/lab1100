@@ -1,47 +1,51 @@
 import { task } from 'gulp';
-import { log, colors } from 'gulp-util';
+import { green } from 'ansi-colors';
+import log = require('fancy-log');
 import webpack = require('webpack');
 import WebpackDevServer = require('webpack-dev-server');
 
 import { WebpackServePackage } from '../packages/webpack-package';
 
 export function createServeWebpackTask(servePack: WebpackServePackage): void {
-    task(`${servePack.getName()}:serve`, (cb: (err?:any) => void) => {
-        const config: webpack.Configuration= servePack.getConfig();
-        //Create a server entry point to broswer reload
+    task(`${servePack.getName()}:serve`, (cb: (err?: any) => void) => {
+        const config: webpack.Configuration = servePack.getConfig();
+        // Create a server entry point to broswer reload
         WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
-        //Initialite webpack compiler
+        // Initialite webpack compiler
         const compiler = webpack(config);
-        //Apply progress bar plugin
-        compiler.apply(new webpack.ProgressPlugin());
-        //Create the server instance
+        // Apply progress bar plugin
+        compiler.apply(new webpack.ProgressPlugin({
+            profile: true
+        }));
+        // Create the server instance
         const server = new WebpackDevServer(compiler, config.devServer);
-        //Close serve un SIGINT,SIGTERM event
-        closeOnSign(server, ['SIGINT', 'SIGTERM'], cb);
-        server.listen(config.devServer.port, config.devServer.host, (err:any) => {
+        // Close serve un SIGINT,SIGTERM event
+        closeOnSign(server, ['SIGINT', 'SIGTERM'], () => true);
+        server.listen(config.devServer.port, config.devServer.host, (err: any) => {
             if (err) {
-                throw err;
+                cb(err);
             } else {
                 const domain = [
                     (servePack.https ? 'https' : 'http'),
                     '://', config.devServer.host, ':', config.devServer.port
                 ];
                 log(' ');
-                log(colors.green('Application serving at'));
-                log(colors.green(domain.join('')));
+                log(green('Application serving at'));
+                log(green(domain.join('')));
+                cb();
             }
         });
     });
 }
 
-function closeOnSign(closable: { close: (cb?:Function) => void }, signs: any[], callback: (err?:any) => void) {
-    let onSign = () => {
+function closeOnSign(closable: { close: (cb?: () => void) => void }, signs: any[], callback: (err?: any) => void) {
+    const onSign = () => {
         callback();
         closable.close(() => {
             process.exit();
         });
     };
-    for (let sign of [...signs]) {
+    for (const sign of [...signs]) {
         process.on(sign, onSign);
     }
 }

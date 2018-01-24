@@ -7,7 +7,7 @@ export default class E2eProtractorPackage extends Package {
         super(`${name}:protractor`, dependecies);
     }
 
-    laucher(): (...args:any[]) => void{
+    laucher(): (...args: any[]) => void {
         return require(`${dirname(require.resolve('protractor'))}/launcher`).init;
     }
 
@@ -17,13 +17,13 @@ export default class E2eProtractorPackage extends Package {
             additionalConfig: {
                 suites: {
                     homepage: './e2e/homepage/**/*.e2e-spec.ts'
-                },
+                }
             }
         };
     }
 }
 
-export interface ProtractorConfig{
-    config: string,
-    additionalConfig: any
+export interface ProtractorConfig {
+    config: string;
+    additionalConfig: any;
 }
