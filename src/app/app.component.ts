@@ -8,5 +8,5 @@ import '../assets/css/styles.scss';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  pageTitle: string = "Angular2 Webpack";
+  pageTitle: string = 'Lab1100';
 }

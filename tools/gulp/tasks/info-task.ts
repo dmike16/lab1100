@@ -1,14 +1,15 @@
 import {task} from 'gulp';
-import {log,colors} from 'gulp-util';
+import { blue,red,green } from 'ansi-colors';
+import log=require('fancy-log');
 
 import InfoPackage from '../packages/info-package';
 
 export default function createInfoTask(infoPack: InfoPackage):void{
   const config = infoPack.getConfig();
   const color:{[p:string]:any} = {
-    'blue': colors.blue,
-    'red':colors.red,
-    'green':colors.green
+    'blue': blue,
+    'red': red,
+    'green': green
   }
   task(`${infoPack.getName()}:info`,async ()=>{
     for(let key in config){

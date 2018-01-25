@@ -35,18 +35,18 @@ export abstract class WebpackCommonPackage extends Package {
     return {
       // Entry Points
       entry: {
-        'polyfills': './src/polyfills.ts',
-        'vendor': './src/vendor.ts',
-        'app': './src/main.ts'
+        polyfills: './src/polyfills.ts',
+        vendor: './src/vendor.ts',
+        app: './src/main.ts'
       },
       // Ext to resolve when is not specified
       resolve: {
         extensions: ['.ts', '.js']
       },
-      //Module section
+      // Module section
       module: {
         rules: [
-          //Html rule
+          // Html rule
           {
             test: /\.html$/,
             use: {
@@ -54,12 +54,12 @@ export abstract class WebpackCommonPackage extends Package {
               options: { minimize: false }
             }
           },
-          //Image and fonts rule
+          // Image and fonts rule
           {
             test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
             use: ['file-loader?name=assets/[name].[hash].[ext]']
           },
-          //Css in assets rule
+          // Css in assets rule
           {
             test: /\.scss$/,
             exclude: this.resolveInProject('src', 'app'),
@@ -85,14 +85,14 @@ export abstract class WebpackCommonPackage extends Package {
       },
 
       plugins: [
-        //Fix an angular2 warning
+        // Fix an angular2 warning
         new ContextReplacementPlugin(
           /angular(\\|\/)core(\\|\/)(@angular|esm5)/,
           this.resolveInProject('./src'),
           {}
         )
       ]
-    }
+    };
   }
 }
 /**
@@ -112,7 +112,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       },
         'angular2-template-loader'
       ]
-    }]
+    }];
   }
 
   getConfig(): Configuration {
@@ -131,7 +131,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       },
 
       plugins: [
-        //Clean dist on rebuild
+        // Clean dist on rebuild
         new CleanWebpackPlugin([this.resolveInProject('build')], {
           allowExternal: true
         }),
@@ -154,9 +154,9 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         new ExtractTextPlugin('[name].[chunkhash].css'),
         new DefinePlugin({
           'process.env': {
-            'ENV': JSON.stringify(ENV),
-            'VERSION': JSON.stringify(VERSION),
-            'PROJECT_NAME': JSON.stringify(PROJECT_NAME)
+            ENV: JSON.stringify(ENV),
+            VERSION: JSON.stringify(VERSION),
+            PROJECT_NAME: JSON.stringify(PROJECT_NAME)
           }
         }),
         // Fill the index.html with buldle geneated
@@ -191,15 +191,14 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
           sourceMap: true
         })
       ]
-    })
+    });
   }
 }
 /**
  * Serve webpack server pacakge
  */
 export class WebpackServePackage extends WebpackCommonPackage {
-  public https: any = true;
-
+  https: any = true;
 
   getRules(): [any] {
     return [{
@@ -212,7 +211,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       },
         'angular2-template-loader'
       ]
-    }]
+    }];
   }
 
   getConfig(): Configuration {
@@ -254,8 +253,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
 /**
  * Test webpack Karma package
  */
-export class WebpackKarmaPackage extends WebpackCommonPackage
- {
+export class WebpackKarmaPackage extends WebpackCommonPackage {
   getRules(): [any] {
     return [
       {
@@ -269,7 +267,7 @@ export class WebpackKarmaPackage extends WebpackCommonPackage
           'angular2-template-loader'
         ]
       },
-      //Html rule
+      // Html rule
       {
         test: /\.html$/,
         use: {
@@ -277,12 +275,12 @@ export class WebpackKarmaPackage extends WebpackCommonPackage
           options: { minimize: false }
         }
       },
-      //Image and fonts rule
+      // Image and fonts rule
       {
         test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
         use: 'null-loader'
       },
-      //Css in assets rule
+      // Css in assets rule
       {
         test: /\.scss$/,
         exclude: this.resolveInProject('src', 'app'),
@@ -297,12 +295,12 @@ export class WebpackKarmaPackage extends WebpackCommonPackage
     ];
   }
 
-  getConfig(): Configuration{
+  getConfig(): Configuration {
     const parent = super.getConfig();
     delete parent.entry;
     delete parent.module;
 
-    return merge(parent,{
+    return merge(parent, {
       devtool: 'cheap-module-eval-source-map',
 
       output: {

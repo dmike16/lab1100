@@ -3,14 +3,24 @@ import { createServeWebpackTask } from './tasks/serve-task';
 import { createBuildWebpackTask } from './tasks/build-task';
 import { createZipDistTask } from './tasks/dist-task';
 import { createKarmaWebpackTask } from './tasks/test-task';
+import { createE2eProtractorTask } from './tasks/e2e-task';
 
-import { infoPack, webpackServePack, webpackBuildPack, webpackAOTPack, zipPack, KarmaPack } from './packages';
+import {
+    infoPack,
+    webpackServePack,
+    webpackBuildPack,
+    webpackAOTPack,
+    zipPack,
+    karmaPack,
+    e2ePack
+} from './packages';
 
 createInfoTask(infoPack);
 createServeWebpackTask(webpackServePack);
 createBuildWebpackTask(webpackBuildPack);
 createBuildWebpackTask(webpackAOTPack);
 createZipDistTask(zipPack);
-createKarmaWebpackTask(KarmaPack);
+createKarmaWebpackTask(karmaPack);
+createE2eProtractorTask(e2ePack);
 
 import './tasks/default';
