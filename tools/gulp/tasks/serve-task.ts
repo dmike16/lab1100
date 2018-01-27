@@ -18,6 +18,15 @@ export function createServeWebpackTask(servePack: WebpackServePackage): void {
             profile: true
         }));
         // Create the server instance
+        const webpackDevServerOpts = Object.assign(config.devServer, {
+            stats: {
+                cached: false,
+                cachedAssets: false,
+                colors() {
+                    return require('supports-color');
+                }
+            }
+        });
         const server = new WebpackDevServer(compiler, config.devServer);
         // Close serve un SIGINT,SIGTERM event
         closeOnSign(server, ['SIGINT', 'SIGTERM'], () => true);
