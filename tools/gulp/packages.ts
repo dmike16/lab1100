@@ -23,3 +23,5 @@ export const webpackAOTPack = new WebpackBuildAOTPackage('lab1100');
 export const zipPack = new ZipPackage('lab1100', [webpackAOTPack]);
 export const karmaPack = new WebpackKarmaPackage('lab1100');
 export const e2ePack = new E2eProtractorPackage('lab1100');
+export const i18nPack = new WebpackBuildAOTPackage('lab1100');
+export const itPack = new WebpackBuildAOTPackage('lab1100-it');
