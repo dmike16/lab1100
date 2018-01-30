@@ -3,7 +3,7 @@ import webpack = require('webpack');
 import webpackStream = require('webpack-stream');
 import pump = require('pump');
 
-import { WebpackBuildProdPackage } from '../packages/webpack-package';
+import { WebpackBuildProdPackage, WebpackBuildAOTPackage } from '../packages/webpack-package';
 
 export function createBuildWebpackTask(buildPack: WebpackBuildProdPackage) {
   const source = buildPack.resolveInProject('src');
@@ -15,4 +15,14 @@ export function createBuildWebpackTask(buildPack: WebpackBuildProdPackage) {
       dest(target)
     ], cb);
   });
+}
+
+export function createBuildIT(buildPack: WebpackBuildAOTPackage, translation: string) {
+  buildPack.options = {
+    i18nInFile: buildPack.resolveInProject('src', 'locale', translation),
+    i18nInFormat: 'xlif',
+    locale: 'it',
+    missingTranslation: 'warning'
+  } as any;
+  createBuildWebpackTask(buildPack);
 }

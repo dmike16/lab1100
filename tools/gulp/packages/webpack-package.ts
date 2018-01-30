@@ -11,7 +11,7 @@ import {
 import merge = require('webpack-merge');
 import HtmlWebpackPlugin = require('html-webpack-plugin');
 import CleanWebpackPlugin = require('clean-webpack-plugin');
-import { AngularCompilerPlugin } from '@ngtools/webpack';
+import { AngularCompilerPlugin, ExtractI18nPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
 import { version, name } from '../../../package.json';
 
 import Package from './package';
@@ -172,6 +172,8 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
  * AOT build package
  */
 export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
+  private aotOptions: AngularCompilerPluginOptions;
+
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:aot`, dependencies);
   }
@@ -182,14 +184,19 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
       loader: '@ngtools/webpack'
     }];
   }
+
+  set options(value: AngularCompilerPluginOptions) {
+    this.aotOptions = Object.assign({
+      tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
+      entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
+      sourceMap: true
+    }, value);
+  }
+
   getConfig(): Configuration {
     return merge(super.getConfig(), {
       plugins: [
-        new AngularCompilerPlugin({
-          tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
-          entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
-          sourceMap: true
-        })
+        new AngularCompilerPlugin(this.aotOptions)
       ]
     });
   }
