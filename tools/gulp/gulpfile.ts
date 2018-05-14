@@ -19,13 +19,13 @@ import {
 } from './packages';
 
 createInfoTask(infoPack);
-createServeWebpackTask(webpackServePack);
-createBuildWebpackTask(webpackBuildPack);
-createBuildWebpackTask(webpackAOTPack);
-createZipDistTask(zipPack);
-createKarmaWebpackTask(karmaPack);
-createE2eProtractorTask(e2ePack);
-createI18nTask(i18nPack);
-createBuildIT(itPack, 'message.it.xlif');
+//createServeWebpackTask(webpackServePack);
+//createBuildWebpackTask(webpackBuildPack);
+//createBuildWebpackTask(webpackAOTPack);
+//createZipDistTask(zipPack);
+//createKarmaWebpackTask(karmaPack);
+//createE2eProtractorTask(e2ePack);
+//createI18nTask(i18nPack);
+//createBuildIT(itPack, 'message.it.xlif');
 
 import './tasks/default';

@@ -1,4 +1,3 @@
-import ExtractTextPlugin = require('extract-text-webpack-plugin');
 import {
   ContextReplacementPlugin,
   NoEmitOnErrorsPlugin,
@@ -11,8 +10,8 @@ import {
 import merge = require('webpack-merge');
 import HtmlWebpackPlugin = require('html-webpack-plugin');
 import CleanWebpackPlugin = require('clean-webpack-plugin');
-import { AngularCompilerPlugin, ExtractI18nPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
-import { version, name } from '../../../package.json';
+import { AngularCompilerPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
+const { version, name } =  require('../../../package.json');
 
 import Package from './package';
 
@@ -63,17 +62,14 @@ export abstract class WebpackCommonPackage extends Package {
           {
             test: /\.scss$/,
             exclude: this.resolveInProject('src', 'app'),
-            use: ExtractTextPlugin.extract({
-              fallback: 'style-loader',
-              use: [{
-                loader: 'css-loader',
-                options: { sourceMap: true }
-              },
-              {
-                loader: 'sass-loader',
-                options: { sourceMap: true }
-              }]
-            })
+            use: [{
+              loader: 'css-loader',
+              options: { sourceMap: true }
+            },
+            {
+              loader: 'sass-loader',
+              options: { sourceMap: true }
+            }]
           },
           // Css in app folder rule
           {
@@ -137,13 +133,6 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         }),
         new NoEmitOnErrorsPlugin(),
         new HashedModuleIdsPlugin(),
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
-        new optimize.CommonsChunkPlugin({
-          name: 'boilerplate',
-          minChunks: Infinity
-        }),
         new optimize.UglifyJsPlugin({
           sourceMap: true,
           mangle: {
@@ -151,7 +140,6 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
           }
 
         }),
-        new ExtractTextPlugin('[name].[chunkhash].css'),
         new DefinePlugin({
           'process.env': {
             ENV: JSON.stringify(ENV),
@@ -237,10 +225,6 @@ export class WebpackServePackage extends WebpackCommonPackage {
       },
 
       plugins: [
-        new ExtractTextPlugin('[name].css'),
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
           template: 'src/index.html'
@@ -261,7 +245,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
  * Test webpack Karma package
  */
 export class WebpackKarmaPackage extends WebpackCommonPackage {
-  getRules(): [any] {
+  getRules(): any {
     return [
       {
         test: /\.ts$/,

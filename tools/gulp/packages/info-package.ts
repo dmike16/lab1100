@@ -1,6 +1,5 @@
 import Package from './package';
-
-import * as data from '../../../package.json';
+import {_PACKAGE_JSON as data} from '@dmike/packages';
 
 export default class InfoPackage extends Package{
   constructor(name:string,dependencies?:Package[]){

@@ -12,10 +12,30 @@
     "lib": [
       "es6"
     ],
-    "typeRoots": ["./node_modules", "./types"],
-    "types": ["node", "gulp", "ansi-colors","package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
-      "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip", "karma"
-    ]
+    "typeRoots": [
+      "./node_modules",
+      "./types"
+    ],
+    "types": [
+      "node",
+      "gulp",
+      "ansi-colors",
+      "webpack",
+      "webpack-dev-server",
+      "webpack-merge",
+      "clean-webpack-plugin",
+      "html-webpack-plugin",
+      "pump",
+      "run-sequence",
+      "gulp-zip",
+      "karma"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@dmike/packages": [
+        "packages/index.ts"
+      ]
+    }
   },
   "files": [
     "gulpfile.ts"
