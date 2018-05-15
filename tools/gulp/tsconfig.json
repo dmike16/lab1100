@@ -32,8 +32,11 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@dmike/packages": [
-        "packages/index.ts"
+      "@ngx-lab1100/packages": [
+        "packages/index"
+      ],
+      "@ngx-lab1100/tasks": [
+        "tasks/index"
       ]
     }
   },

@@ -14,9 +14,7 @@ export function createServeWebpackTask(servePack: WebpackServePackage): void {
         // Initialite webpack compiler
         const compiler = webpack(config);
         // Apply progress bar plugin
-        compiler.apply(new webpack.ProgressPlugin({
-            profile: true
-        }));
+        compiler.apply(new webpack.ProgressPlugin());
         // Create the server instance
         const webpackDevServerOpts = Object.assign(config.devServer, {
             stats: {

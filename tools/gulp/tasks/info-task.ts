@@ -1,9 +1,9 @@
 import {task} from 'gulp';
 import { blue,red,green } from 'ansi-colors';
 import log=require('fancy-log');
-import {InfoPackage} from '@dmike/packages';
+import {InfoPackage} from '@ngx-lab1100/packages';
 
-export default function createInfoTask(infoPack: InfoPackage):void{
+export  function createInfoTask(infoPack: InfoPackage):void{
   const config = infoPack.getConfig();
   const color:{[p:string]:any} = {
     'blue': blue,

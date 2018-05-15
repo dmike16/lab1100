@@ -2,8 +2,8 @@ import { task, src, dest } from 'gulp';
 import runSeq = require('run-sequence');
 import pump = require('pump');
 import zip = require('gulp-zip');
+import { ZipPackage } from '@ngx-lab1100/packages';
 
-import ZipPackage from '../packages/zip-package';
 
 export function createZipDistTask(zipPack: ZipPackage) {
     const config = zipPack.getConfig();

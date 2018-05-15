@@ -1,6 +1,4 @@
 import { task, src } from 'gulp';
-import webpack = require('webpack');
-import webpackStream = require('webpack-stream');
 import pump = require('pump');
 import { WebpackBuildAOTPackage } from '../packages/webpack-package';
 
@@ -12,9 +10,6 @@ export function createI18nTask(i18nPack: WebpackBuildAOTPackage) {
             i18nOutFormat: 'xlif',
             locale: 'en'
         } as any;
-        pump([
-            src([`${source}/main.ts`, `${source}/polyfills.ts`, `${source}/vendor.ts`]),
-            webpackStream(i18nPack.getConfig(), webpack)
-        ], cb);
+        //TODO new build process
     });
 }

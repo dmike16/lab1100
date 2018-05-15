@@ -1,14 +1,14 @@
 import { readFileSync } from 'fs';
 
-import InfoPackage from './packages/info-package';
 import {
+  InfoPackage,
+  ZipPackage,
+  E2eProtractorPackage,
   WebpackBuildProdPackage,
   WebpackBuildAOTPackage,
   WebpackServePackage,
   WebpackKarmaPackage
-} from './packages/webpack-package';
-import ZipPackage from './packages/zip-package';
-import E2eProtractorPackage from './packages/e2e-protractor';
+} from  '@ngx-lab1100/packages';
 
 export const infoPack = new InfoPackage('lab1100');
 export const webpackBuildPack = new WebpackBuildProdPackage('lab1100');

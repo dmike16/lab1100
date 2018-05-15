@@ -1,10 +1,4 @@
-import createInfoTask from './tasks/info-task';
-import { createServeWebpackTask } from './tasks/serve-task';
-import { createBuildWebpackTask, createBuildIT } from './tasks/build-task';
-import { createZipDistTask } from './tasks/dist-task';
-import { createKarmaWebpackTask } from './tasks/test-task';
-import { createE2eProtractorTask } from './tasks/e2e-task';
-import { createI18nTask } from './tasks/i18n-task';
+import {createInfoTask} from '@ngx-lab1100/tasks';
 
 import {
     infoPack,

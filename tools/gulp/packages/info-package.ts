@@ -1,5 +1,5 @@
 import Package from './package';
-import {_PACKAGE_JSON as data} from '@dmike/packages';
+import {_PACKAGE_JSON as data} from '@ngx-lab1100/packages';
 
 export default class InfoPackage extends Package{
   constructor(name:string,dependencies?:Package[]){

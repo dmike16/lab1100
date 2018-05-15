@@ -26,7 +26,7 @@ export abstract class WebpackCommonPackage extends Package {
     super(`${name}:webpack`, dependencies);
   }
 
-  getRules(): [any] {
+  getRules(): Array<any> {
     return null;
   }
 
@@ -97,7 +97,7 @@ export abstract class WebpackCommonPackage extends Package {
  */
 export class WebpackBuildProdPackage extends WebpackCommonPackage {
 
-  getRules(): [any] {
+  getRules(): Array<any> {
     return [{
       test: /\.ts$/,
       use: [{
@@ -166,7 +166,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     super(`${name}:aot`, dependencies);
   }
 
-  getRules(): [any] {
+  getRules(): Array<any> {
     return [{
       test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
       loader: '@ngtools/webpack'
@@ -195,7 +195,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
 export class WebpackServePackage extends WebpackCommonPackage {
   https: any = true;
 
-  getRules(): [any] {
+  getRules(): Array<any> {
     return [{
       test: /\.ts$/,
       use: [{
@@ -214,7 +214,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       devtool: 'cheap-module-eval-source-map',
 
       output: {
-        path: this.resolveInProject('dist'),
+        path: this.resolveInProject('build'),
         publicPath: '/',
         filename: '[name].js',
         chunkFilename: '[id].chunk.js'
@@ -245,7 +245,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
  * Test webpack Karma package
  */
 export class WebpackKarmaPackage extends WebpackCommonPackage {
-  getRules(): any {
+  getRules(): Array<any> {
     return [
       {
         test: /\.ts$/,
@@ -295,7 +295,7 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
       devtool: 'cheap-module-eval-source-map',
 
       output: {
-        path: this.resolveInProject('dist'),
+        path: this.resolveInProject('build'),
         publicPath: '/',
         filename: '[name].js',
         chunkFilename: '[id].chunk.js'
