@@ -1,8 +1,8 @@
-import {task} from 'gulp';
+import { task } from 'gulp';
 import { yellow } from 'ansi-colors';
-import log=require('fancy-log');
+import log = require('fancy-log');
 
-task('default',()=>{
+task('default', () => {
   log(yellow('      === GULP ===     '));
   log(yellow('Default gulp tasks.'));
   log(yellow('Read the package json script prop'));

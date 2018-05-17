@@ -1,7 +1,7 @@
-import Package from './package';
+import {Package} from './package';
 import { root } from './package';
 
-export default class ZipPackage extends Package {
+export  class ZipPackage extends Package {
 
   getConfig(): { [prop: string]: any } {
     return {

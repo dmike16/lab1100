@@ -8,6 +8,8 @@
             true,
             "no-public"
         ],
+        "no-console": [true, "log"],
+        "no-var-requires": false,
         "interface-name": false,
         "no-shadowed-variable": false,
         "max-classes-per-file": false,
@@ -16,6 +18,10 @@
             "single",
             "avoid-escape",
             "avoid-template"
+        ],
+        "no-empty": [
+            true,
+            "allow-empty-functions"
         ]
     }
 }

@@ -1,13 +1,11 @@
-import { task, src, dest } from 'gulp';
-import pump = require('pump');
+import { task } from 'gulp';
 
-import { WebpackBuildProdPackage, WebpackBuildAOTPackage } from '../packages/webpack-package';
+import { WebpackBuildProdPackage, WebpackBuildAOTPackage } from '@ngx-lab1100/packages';
+import {webpackCompile} from '@ngx-lab1100/process';
 
 export function createBuildWebpackTask(buildPack: WebpackBuildProdPackage) {
-  const source = buildPack.resolveInProject('src');
-  const target = buildPack.resolveInProject('build');
   task(`${buildPack.getName()}:build`, (cb: (err?: any) => void) => {
-   //TODO build process
+    webpackCompile(buildPack.getConfig(), cb);
   });
 }
 

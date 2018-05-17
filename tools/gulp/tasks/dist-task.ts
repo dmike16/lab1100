@@ -4,7 +4,6 @@ import pump = require('pump');
 import zip = require('gulp-zip');
 import { ZipPackage } from '@ngx-lab1100/packages';
 
-
 export function createZipDistTask(zipPack: ZipPackage) {
     const config = zipPack.getConfig();
     task(`${zipPack.getName()}:zip`, (cb) => {

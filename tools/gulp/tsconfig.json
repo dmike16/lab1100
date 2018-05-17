@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es6",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
@@ -17,21 +17,13 @@
       "./types"
     ],
     "types": [
-      "node",
-      "gulp",
-      "ansi-colors",
-      "webpack",
-      "webpack-dev-server",
-      "webpack-merge",
-      "clean-webpack-plugin",
-      "html-webpack-plugin",
-      "pump",
-      "run-sequence",
-      "gulp-zip",
-      "karma"
+      "node"
     ],
     "baseUrl": ".",
     "paths": {
+      "@ngx-lab1100/process": [
+        "process/index"
+      ],
       "@ngx-lab1100/packages": [
         "packages/index"
       ],

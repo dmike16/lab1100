@@ -5,11 +5,14 @@ const path = require('path');
 const tsconfigPath = path.join(__dirname,'tools/gulp/tsconfig.json');
 const tsconfig = require(tsconfigPath);
 
+require('ts-node').register({
+  project: tsconfigPath,
+  cache: false
+});
+
 require("tsconfig-paths").register({
-  baseUrl: `${__dirname}/tools/gulp`,
+  baseUrl: path.dirname(tsconfigPath),
   paths: tsconfig.compilerOptions.paths
 });
-require('ts-node').register({
-  project: tsconfigPath
-});
+
 require('./tools/gulp/gulpfile');

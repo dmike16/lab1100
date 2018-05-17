@@ -11,9 +11,9 @@ import merge = require('webpack-merge');
 import HtmlWebpackPlugin = require('html-webpack-plugin');
 import CleanWebpackPlugin = require('clean-webpack-plugin');
 import { AngularCompilerPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
-const { version, name } =  require('../../../package.json');
+const { version, name } = require('../../../package.json');
 
-import Package from './package';
+import {Package} from './package';
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const VERSION = version;
@@ -26,7 +26,7 @@ export abstract class WebpackCommonPackage extends Package {
     super(`${name}:webpack`, dependencies);
   }
 
-  getRules(): Array<any> {
+  getRules(): any[] {
     return null;
   }
 
@@ -97,7 +97,7 @@ export abstract class WebpackCommonPackage extends Package {
  */
 export class WebpackBuildProdPackage extends WebpackCommonPackage {
 
-  getRules(): Array<any> {
+  getRules(): any[] {
     return [{
       test: /\.ts$/,
       use: [{
@@ -166,7 +166,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     super(`${name}:aot`, dependencies);
   }
 
-  getRules(): Array<any> {
+  getRules(): any[] {
     return [{
       test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
       loader: '@ngtools/webpack'
@@ -195,7 +195,7 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
 export class WebpackServePackage extends WebpackCommonPackage {
   https: any = true;
 
-  getRules(): Array<any> {
+  getRules(): any[] {
     return [{
       test: /\.ts$/,
       use: [{
@@ -245,7 +245,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
  * Test webpack Karma package
  */
 export class WebpackKarmaPackage extends WebpackCommonPackage {
-  getRules(): Array<any> {
+  getRules(): any[] {
     return [
       {
         test: /\.ts$/,
