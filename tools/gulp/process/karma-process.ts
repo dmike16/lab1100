@@ -1,5 +1,7 @@
 import { WebpackKarmaPackage } from '@ngx-lab1100/packages';
 export function runKarmaTest(krmPack: WebpackKarmaPackage, done: () => void) {
+    // Karma need to be included into the function
+    // because during the configuraion process re-register  ts-node
     const karma = require('karma');
     // Add webpack config to karma
     const karmaConfig: any = Object.assign({}, {

@@ -12,10 +12,11 @@ import HtmlWebpackPlugin = require('html-webpack-plugin');
 import CleanWebpackPlugin = require('clean-webpack-plugin');
 import { AngularCompilerPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
 const { version, name } = require('../../../package.json');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-import {Package} from './package';
+import { Package, root } from './package';
 
-const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const VERSION = version;
 const PROJECT_NAME = name;
 /**
@@ -32,15 +33,20 @@ export abstract class WebpackCommonPackage extends Package {
 
   getConfig(): Configuration {
     return {
+      // Resolve module
+      resolve: {
+        extensions: ['.ts', '.js'],
+        modules: [root, 'node_modules']
+      },
+      resolveLoader: {
+        modules: ['node_modules']
+      },
+      context: this.resolveInProject('src'),
       // Entry Points
       entry: {
-        polyfills: './src/polyfills.ts',
-        vendor: './src/vendor.ts',
-        app: './src/main.ts'
-      },
-      // Ext to resolve when is not specified
-      resolve: {
-        extensions: ['.ts', '.js']
+        polyfills: './polyfills.ts',
+        vendor: './vendor.ts',
+        app: './main.ts'
       },
       // Module section
       module: {
@@ -58,19 +64,6 @@ export abstract class WebpackCommonPackage extends Package {
             test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
             use: ['file-loader?name=assets/[name].[hash].[ext]']
           },
-          // Css in assets rule
-          {
-            test: /\.scss$/,
-            exclude: this.resolveInProject('src', 'app'),
-            use: [{
-              loader: 'css-loader',
-              options: { sourceMap: true }
-            },
-            {
-              loader: 'sass-loader',
-              options: { sourceMap: true }
-            }]
-          },
           // Css in app folder rule
           {
             test: /.scss$/,
@@ -79,11 +72,10 @@ export abstract class WebpackCommonPackage extends Package {
           }
         ]
       },
-
       plugins: [
-        // Fix an angular2 warning
+        // Fix an angular warning
         new ContextReplacementPlugin(
-          /angular(\\|\/)core(\\|\/)(@angular|esm5)/,
+          /angular(\\|\/)core(\\|\/)(@angular|esm5|fesm5)/,
           this.resolveInProject('./src'),
           {}
         )
@@ -108,13 +100,29 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
       },
         'angular2-template-loader'
       ]
+    },
+    // Css in assets rule
+    {
+      test: /\.scss$/,
+      exclude: this.resolveInProject('src', 'app'),
+      use: [{
+        loader: MiniCssExtractPlugin.loader
+      },
+      {
+        loader: 'css-loader',
+        options: { sourceMap: true }
+      },
+      {
+        loader: 'sass-loader',
+        options: { sourceMap: true }
+      }]
     }];
   }
 
   getConfig(): Configuration {
     return merge(super.getConfig(), {
       devtool: 'source-map',
-
+      mode: 'production',
       output: {
         path: this.resolveInProject('build'),
         publicPath: '/lab1100/',
@@ -126,6 +134,49 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         rules: this.getRules()
       },
 
+      optimization: {
+        minimizer: [
+          new UglifyJSPlugin({
+            sourceMap: true,
+            cache: true,
+            parallel: true,
+            uglifyOptions: {
+              mangle: {
+                keep_fnames: true
+              }
+            }
+          })
+        ],
+        runtimeChunk: 'single',
+        splitChunks: {
+          maxAsyncRequests: Infinity,
+          cacheGroups: {
+            default: {
+              chunks: 'async',
+              minChunks: 2,
+              priority: 10
+            },
+            common: {
+              name: 'common',
+              chunks: 'async',
+              enforce: true,
+              minChunks: 2,
+              priority: 5
+            },
+            vendors: false,
+            vendor: {
+              name: 'vendor',
+              chunks: 'initial',
+              enforce: true,
+              test: (module: any, chunks: Array<{ name: string }>) => {
+                const moduleName = module.nameForCondition ? module.nameForCondition() : '';
+                return /[\\/]node_modules[\\/]/.test(moduleName)
+                  && !chunks.some(({ name }) => name === 'polyfills');
+              }
+            }
+          } as any
+        }
+      },
       plugins: [
         // Clean dist on rebuild
         new CleanWebpackPlugin([this.resolveInProject('build')], {
@@ -133,23 +184,18 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         }),
         new NoEmitOnErrorsPlugin(),
         new HashedModuleIdsPlugin(),
-        new optimize.UglifyJsPlugin({
-          sourceMap: true,
-          mangle: {
-            keep_fnames: true
-          }
-
-        }),
         new DefinePlugin({
           'process.env': {
-            ENV: JSON.stringify(ENV),
             VERSION: JSON.stringify(VERSION),
             PROJECT_NAME: JSON.stringify(PROJECT_NAME)
           }
         }),
+        new MiniCssExtractPlugin({
+          filename: '[name].[chunkhash].css'
+        }),
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
-          template: 'src/index.html'
+          template: './index.html'
         }),
         new ProgressPlugin()
       ]
@@ -206,13 +252,29 @@ export class WebpackServePackage extends WebpackCommonPackage {
       },
         'angular2-template-loader'
       ]
+    },
+    // Css in assets rule
+    {
+      test: /\.scss$/,
+      exclude: this.resolveInProject('src', 'app'),
+      use: [{
+        loader: 'style-loader'
+      },
+      {
+        loader: 'css-loader',
+        options: { sourceMap: true }
+      },
+      {
+        loader: 'sass-loader',
+        options: { sourceMap: true }
+      }]
     }];
   }
 
   getConfig(): Configuration {
     return merge(super.getConfig(), {
       devtool: 'cheap-module-eval-source-map',
-
+      mode: 'development',
       output: {
         path: this.resolveInProject('build'),
         publicPath: '/',
@@ -224,10 +286,24 @@ export class WebpackServePackage extends WebpackCommonPackage {
         rules: this.getRules()
       },
 
+      // optimization
+      optimization: {
+        minimizer: [
+          new UglifyJSPlugin({
+            sourceMap: false,
+            parallel: true,
+            cache: true,
+            uglifyOptions: {
+              mangle: false
+            }
+          })
+        ]
+      },
+
       plugins: [
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
-          template: 'src/index.html'
+          template: './index.html'
         })
       ],
 

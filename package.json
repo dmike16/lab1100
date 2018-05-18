@@ -7,17 +7,17 @@
     "url": "https://github.com/dmike16/ngx-lab1100"
   },
   "scripts": {
-    "info": "gulp lab1100:info",
-    "serve": "gulp lab1100:webpack:serve",
-    "build": "gulp lab1100:webpack:build",
-    "prod": "gulp lab1100:aot:webpack:build",
-    "prod-it": "gulp lab1100-it:aot:webpack:build",
-    "dist": "gulp lab1100:zip",
-    "test": "gulp lab1100:webpack:test",
-    "i18n": "gulp lab1100:aot:webpack:i18n",
-    "e2e-homepage": "gulp lab1100:protractor:e2e --suite homepage",
+    "info": "gulp ngx-lab1100:info",
+    "serve": "gulp ngx-lab1100:webpack:serve",
+    "build": "gulp ngx-lab1100:webpack:build",
+    "prod": "gulp ngx-lab1100:aot:webpack:build",
+    "prod-it": "gulp ngx-lab1100-it:aot:webpack:build",
+    "dist": "gulp ngx-lab1100:zip",
+    "test": "gulp ngx-lab1100:webpack:test",
+    "i18n": "gulp ngx-lab1100:aot:webpack:i18n",
+    "e2e-homepage": "gulp ngx-lab1100:protractor:e2e --suite homepage",
     "e2e-chrome-webdriver": "webdriver-manager update --standalone false --gecko false --chrome true",
-    "fake-rest": "json-server --watch rest/db.json --routes rest/rules.json"
+    "fake-rest": "echo 'TODO'"
   },
   "keywords": [
     "homework",
@@ -80,6 +80,7 @@
     "karma-jasmine": "^1.1.1",
     "karma-jasmine-html-reporter": "^1.1.0",
     "karma-webpack": "^3.0.0",
+    "mini-css-extract-plugin": "^0.4.0",
     "node-sass": "^4.9.0",
     "null-loader": "^0.1.1",
     "protractor": "^5.3.1",
@@ -93,6 +94,7 @@
     "tsconfig-paths": "^3.3.2",
     "tslint": "^5.10.0",
     "typescript": "^2.7.2",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack": "^4.8.1",
     "webpack-dev-server": "^3.1.4",
     "webpack-merge": "^4.1.2"
