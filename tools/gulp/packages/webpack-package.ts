@@ -69,6 +69,11 @@ export abstract class WebpackCommonPackage extends Package {
             test: /.scss$/,
             include: this.resolveInProject('src', 'app'),
             use: ['raw-loader', 'sass-loader']
+          },
+          // Supress warning on using SystemJS inside angular core
+          {
+            test: /[\/\\]@angular[\/\\]core[\/\\].+\.js$/,
+            parser: { system: true }
           }
         ]
       },
