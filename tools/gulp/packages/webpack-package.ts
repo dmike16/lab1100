@@ -401,6 +401,11 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
         test: /.scss$/,
         include: this.resolveInProject('src', 'app'),
         use: ['raw-loader', 'sass-loader']
+      },
+       // Supress warning on using SystemJS inside angular core
+       {
+        test: /[\/\\]@angular[\/\\]core[\/\\].+\.js$/,
+        parser: { system: true }
       }
     ];
   }
@@ -412,7 +417,7 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
 
     return merge(parent, {
       devtool: 'cheap-module-eval-source-map',
-
+      mode: 'development',
       output: {
         path: this.resolveInProject('build'),
         publicPath: '/',
