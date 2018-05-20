@@ -129,6 +129,8 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
     return merge(super.getConfig(), {
       devtool: 'source-map',
       mode: 'production',
+      recordsPath: this.resolveInProject('records.json'),
+      cache: true,
       output: {
         path: this.resolveInProject('build'),
         publicPath: '/lab1100/',
@@ -172,8 +174,8 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
             common: {
               name: 'common',
               chunks: 'async',
-              enforce: true,
               minChunks: 2,
+              enforce: true,
               priority: 5
             },
             vendors: false,
@@ -187,7 +189,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
                   && !chunks.some(({ name }) => name === 'polyfills');
               }
             },
-            mainStyles: {
+            appStyles: {
               name: 'app',
               chunks: 'all',
               enforce: true,
@@ -222,7 +224,8 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
         }),
         // Fill the index.html with buldle geneated
         new HtmlWebpackPlugin({
-          template: './index.html'
+          template: './index.html',
+          xhtml: true
         }),
         new ProgressPlugin()
       ]
@@ -402,8 +405,8 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
         include: this.resolveInProject('src', 'app'),
         use: ['raw-loader', 'sass-loader']
       },
-       // Supress warning on using SystemJS inside angular core
-       {
+      // Supress warning on using SystemJS inside angular core
+      {
         test: /[\/\\]@angular[\/\\]core[\/\\].+\.js$/,
         parser: { system: true }
       }

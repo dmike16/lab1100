@@ -17,7 +17,8 @@
     "i18n": "gulp ngx-lab1100:aot:webpack:i18n",
     "e2e-homepage": "gulp ngx-lab1100:protractor:e2e --suite homepage",
     "e2e-chrome-webdriver": "webdriver-manager update --standalone false --gecko false --chrome true",
-    "fake-rest": "echo 'TODO'"
+    "fake-rest": "echo 'TODO'",
+    "serve:prod": "light-server  --config ./lightrc.json"
   },
   "keywords": [
     "homework",
@@ -80,6 +81,7 @@
     "karma-jasmine": "^1.1.1",
     "karma-jasmine-html-reporter": "^1.1.0",
     "karma-webpack": "^3.0.0",
+    "light-server": "^2.5.1",
     "mini-css-extract-plugin": "^0.4.0",
     "node-sass": "^4.9.0",
     "null-loader": "^0.1.1",
