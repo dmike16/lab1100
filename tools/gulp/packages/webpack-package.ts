@@ -14,6 +14,7 @@ import { AngularCompilerPlugin, AngularCompilerPluginOptions } from '@ngtools/we
 const { version, name } = require('../../../package.json');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 import { Package, root } from './package';
 
@@ -150,6 +151,13 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
                 keep_fnames: true
               }
             }
+          }),
+          new OptimizeCssAssetsPlugin({
+            cssProcessorOptions: {
+              map: {
+                inline: false
+              }
+            }
           })
         ],
         runtimeChunk: 'single',
@@ -178,6 +186,20 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
                 return /[\\/]node_modules[\\/]/.test(moduleName)
                   && !chunks.some(({ name }) => name === 'polyfills');
               }
+            },
+            mainStyles: {
+              name: 'app',
+              chunks: 'all',
+              enforce: true,
+              test: (module: any, chunks: any[], entry = 'app') => module.constructor.name === 'CssModule'
+                && recursiveIssuer(module) === entry
+            },
+            vendorStyles: {
+              name: 'vendor',
+              chunks: 'all',
+              enforce: true,
+              test: (module: any, chunks: any[], entry = 'vendor') => module.constructor.name === 'CssModule'
+                && recursiveIssuer(module) === entry
             }
           } as any
         }
@@ -211,7 +233,11 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
  * AOT build package
  */
 export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
-  private aotOptions: AngularCompilerPluginOptions;
+  private aotOptions: AngularCompilerPluginOptions = {
+    tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
+    entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
+    sourceMap: true
+  };
 
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:aot`, dependencies);
@@ -221,15 +247,27 @@ export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
     return [{
       test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
       loader: '@ngtools/webpack'
+    },
+    // Css in assets rule
+    {
+      test: /\.scss$/,
+      exclude: this.resolveInProject('src', 'app'),
+      use: [{
+        loader: MiniCssExtractPlugin.loader
+      },
+      {
+        loader: 'css-loader',
+        options: { sourceMap: true }
+      },
+      {
+        loader: 'sass-loader',
+        options: { sourceMap: true }
+      }]
     }];
   }
 
   set options(value: AngularCompilerPluginOptions) {
-    this.aotOptions = Object.assign({
-      tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
-      entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
-      sourceMap: true
-    }, value);
+    this.aotOptions = Object.assign(this.aotOptions, value);
   }
 
   getConfig(): Configuration {
@@ -391,5 +429,15 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
         new ProgressPlugin()
       ]
     });
+  }
+}
+
+function recursiveIssuer(module: any): boolean | string {
+  if (module.issuer) {
+    return recursiveIssuer(module.issuer);
+  } else if (module.name) {
+    return merge.name;
+  } else {
+    return false;
   }
 }
