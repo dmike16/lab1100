@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+-add husky npm dep
 -upgrade to webpack 4.x.x
 -upgrade to angular 6.x.x
  -add tslint configuration file
