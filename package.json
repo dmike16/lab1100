@@ -18,7 +18,8 @@
     "e2e-homepage": "gulp ngx-lab1100:protractor:e2e --suite homepage",
     "e2e-chrome-webdriver": "webdriver-manager update --standalone false --gecko false --chrome true",
     "fake-rest": "echo 'TODO'",
-    "serve:prod": "light-server  --config ./lightrc.json"
+    "serve:prod": "light-server  --config ./lightrc.json",
+    "commitmsg": "node ./script/git/commit-msg.js"
   },
   "keywords": [
     "homework",
@@ -38,6 +39,7 @@
     "@angular/platform-browser": "^6.0.1",
     "@angular/platform-browser-dynamic": "^6.0.1",
     "@angular/router": "^6.0.1",
+    "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.5",
     "remove": "^0.1.5",
     "rxjs": "^6.1.0",
@@ -73,6 +75,7 @@
     "gulp-zip": "^4.1.0",
     "html-loader": "^0.5.4",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^0.14.3",
     "jasmine-core": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
     "json-server": "^0.12.2",
