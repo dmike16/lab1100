@@ -1,5 +1,5 @@
-[ACTION] Short description
-
-================================
-	Long description
-================================
+<type>(<scope>): <subject> 
+<BLANK LINE> 
+<body?> 
+<BLANK LINE>
+<footer?>
