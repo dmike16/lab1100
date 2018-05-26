@@ -18,6 +18,46 @@
       }
     }
   ],
+  "src/app/app.component.html": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "../../node_modules/file-loader/dist/cjs.js?name=assets/[name].[hash].[ext]!assets/images/angular.png": "7WKP",
+          "../../node_modules/html-loader/index.js??ref--4!app/app.component.html": "vJZU"
+        },
+        "usedIds": {
+          "7WKP": "7WKP",
+          "vJZU": "vJZU"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
+  "src/app/app.component.scss": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "../../node_modules/raw-loader/index.js!../../node_modules/sass-loader/lib/loader.js!app/app.component.scss": "ZJqC"
+        },
+        "usedIds": {
+          "ZJqC": "ZJqC"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
   "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--9-1!../../node_modules/sass-loader/lib/loader.js??ref--9-2!assets/css/styles.scss": [
     {
       "modules": {
@@ -123,7 +163,6 @@
       "../../node_modules/rxjs/_esm5/internal/operators/bufferWhen.js": "76Ba",
       "../../node_modules/core-js/modules/es6.reflect.get-prototype-of.js": "7Nvk",
       "../../node_modules/core-js/modules/_parse-float.js": "7Q9t",
-      "../../node_modules/file-loader/dist/cjs.js?name=assets/[name].[hash].[ext]!assets/images/angular.png": "7WKP",
       "../../node_modules/rxjs/_esm5/internal/operators/concat.js": "7XY+",
       "../../node_modules/core-js/modules/_set-proto.js": "7Zmh",
       "../../node_modules/core-js/modules/es6.number.parse-int.js": "7dyJ",
@@ -136,7 +175,6 @@
       "../../node_modules/core-js/modules/es6.string.fixed.js": "8NJi",
       "../../node_modules/rxjs/_esm5/internal/util/isNumeric.js": "8tfy",
       "../../node_modules/core-js/modules/es6.typed.array-buffer.js": "91z2",
-      "../../node_modules/@angular/router/fesm5/router.js": "981U",
       "../../node_modules/core-js/modules/_uid.js": "9FWt",
       "../../node_modules/core-js/modules/es6.string.starts-with.js": "9J3r",
       "../../node_modules/rxjs/_esm5/internal/observable/bindCallback.js": "9jpk",
@@ -222,7 +260,6 @@
       "../../node_modules/rxjs/_esm5/index.js": "LcNk",
       "../../node_modules/rxjs/_esm5/internal/util/subscribeToResult.js 1582fb0612c3bf965eb4f7e72c4586ce": "Lh+r",
       "../../node_modules/rxjs/_esm5/internal/BehaviorSubject.js": "LiEJ",
-      "../../node_modules/@angular/platform-browser-dynamic/fesm5/platform-browser-dynamic.js bb59a9cf8466269f8a1736ac64362a72": "LnhX",
       "../../node_modules/@angular/core/fesm5/core.js": "LoAr",
       "../../node_modules/rxjs/_esm5/internal/util/not.js": "Lrga",
       "../../node_modules/rxjs/_esm5/internal/operators/merge.js": "MVQ4",
@@ -309,14 +346,13 @@
       " lazy groupOptions: {} namespace object": "Y375",
       "../../node_modules/rxjs/_esm5/internal/operators/materialize.js": "Y3DA",
       "../../node_modules/rxjs/_esm5/internal/operators/window.js": "YQm4",
-      "../../node_modules/awesome-typescript-loader/dist/entry.js??ref--8-0!../../node_modules/angular2-template-loader/index.js!polyfills.ts": "YUB5",
+      "../../node_modules/@ngtools/webpack/src/index.js!polyfills.ts": "YUB5",
       "../../node_modules/rxjs/_esm5/operators/index.js": "YfSF",
       "../../node_modules/core-js/modules/es6.array.sort.js": "Yyzt",
       "../../node_modules/core-js/modules/es6.math.cbrt.js": "Z4yN",
       "../../node_modules/core-js/modules/_invoke.js": "ZA3W",
       "../../node_modules/core-js/es6/index.js": "ZCpT",
       "../../node_modules/rxjs/_esm5/internal/operators/publish.js": "ZJHl",
-      "../../node_modules/raw-loader/index.js!../../node_modules/sass-loader/lib/loader.js!app/app.component.scss": "ZJqC",
       "../../node_modules/core-js/modules/_collection-strong.js": "ZPxW",
       "../../node_modules/rxjs/_esm5/internal/util/isDate.js": "ZXFP",
       "../../node_modules/rxjs/_esm5/internal/ReplaySubject.js": "Zl8a",
@@ -365,7 +401,7 @@
       "../../node_modules/core-js/modules/_object-gops.js": "gQmS",
       "../../node_modules/rxjs/_esm5/internal/observable/merge.js 8e4efd73529608901c87fa4baa2bd1be": "gQst",
       "../../node_modules/core-js/modules/_fails-is-regexp.js": "giLt",
-      "../../node_modules/awesome-typescript-loader/dist/entry.js??ref--8-0!../../node_modules/angular2-template-loader/index.js!main.ts 516850caf77fcb8625504f707147794a": "gmml",
+      "../../node_modules/@ngtools/webpack/src/index.js!main.ts f42d4d8e23f9d2583735d4f225dd681a": "gmml",
       "../../node_modules/rxjs/_esm5/internal/util/TimeoutError.js": "hCmf",
       "../../node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js": "hHHi",
       "../../node_modules/rxjs/_esm5/internal/operators/throttleTime.js": "hOK2",
@@ -412,7 +448,6 @@
       "../../node_modules/core-js/modules/_iterators.js": "ndOI",
       "../../node_modules/core-js/modules/_to-integer.js": "nmGk",
       "../../node_modules/core-js/modules/es6.array.from.js": "nruA",
-      "../../node_modules/zone.js/dist/long-stack-trace-zone.js": "nyXi",
       "../../node_modules/core-js/modules/es6.array.join.js": "oSPv",
       "../../node_modules/core-js/modules/_fails.js": "oSRv",
       "../../node_modules/rxjs/_esm5/internal/operators/throttle.js": "oxTG",
@@ -469,7 +504,6 @@
       "../../node_modules/core-js/modules/_hide.js": "uv4k",
       "../../node_modules/core-js/modules/es6.string.sub.js": "v4K8",
       "../../node_modules/core-js/modules/es6.regexp.flags.js": "vGbc",
-      "../../node_modules/html-loader/index.js??ref--4!app/app.component.html": "vJZU",
       "../../node_modules/rxjs/_esm5/internal/observable/never.js": "vKrG",
       "../../node_modules/core-js/modules/es6.number.to-fixed.js": "vKyf",
       "../../node_modules/core-js/modules/_classof.js": "vkXE",
@@ -482,7 +516,6 @@
       "../../node_modules/rxjs/_esm5/internal/operators/takeLast.js": "wyaJ",
       "../../node_modules/rxjs/_esm5/internal/operators/elementAt.js": "wzYd",
       "../../node_modules/core-js/modules/_object-gopn.js": "x0t8",
-      "../../node_modules/awesome-typescript-loader/dist/entry.js??ref--8-0!../../node_modules/angular2-template-loader/index.js!vendor.ts": "xDq8",
       "../../node_modules/core-js/modules/_to-index.js": "xXAB",
       "../../node_modules/core-js/modules/es6.number.is-finite.js": "xs+y",
       "../../node_modules/core-js/modules/es6.object.seal.js": "xzVJ",
@@ -584,7 +617,6 @@
       "76Ba": "76Ba",
       "7Nvk": "7Nvk",
       "7Q9t": "7Q9t",
-      "7WKP": "7WKP",
       "7XY+": "7XY+",
       "7Zmh": "7Zmh",
       "7dyJ": "7dyJ",
@@ -597,7 +629,6 @@
       "8NJi": "8NJi",
       "8tfy": "8tfy",
       "91z2": "91z2",
-      "981U": "981U",
       "9FWt": "9FWt",
       "9J3r": "9J3r",
       "9jpk": "9jpk",
@@ -683,7 +714,6 @@
       "LcNk": "LcNk",
       "Lh+r": "Lh+r",
       "LiEJ": "LiEJ",
-      "LnhX": "LnhX",
       "LoAr": "LoAr",
       "Lrga": "Lrga",
       "MVQ4": "MVQ4",
@@ -777,7 +807,6 @@
       "ZA3W": "ZA3W",
       "ZCpT": "ZCpT",
       "ZJHl": "ZJHl",
-      "ZJqC": "ZJqC",
       "ZPxW": "ZPxW",
       "ZXFP": "ZXFP",
       "Zl8a": "Zl8a",
@@ -873,7 +902,6 @@
       "ndOI": "ndOI",
       "nmGk": "nmGk",
       "nruA": "nruA",
-      "nyXi": "nyXi",
       "oSPv": "oSPv",
       "oSRv": "oSRv",
       "oxTG": "oxTG",
@@ -930,7 +958,6 @@
       "uv4k": "uv4k",
       "v4K8": "v4K8",
       "vGbc": "vGbc",
-      "vJZU": "vJZU",
       "vKrG": "vKrG",
       "vKyf": "vKyf",
       "vkXE": "vkXE",
@@ -943,7 +970,6 @@
       "wyaJ": "wyaJ",
       "wzYd": "wzYd",
       "x0t8": "x0t8",
-      "xDq8": "xDq8",
       "xXAB": "xXAB",
       "xs+y": "xs+y",
       "xzVJ": "xzVJ",
@@ -966,8 +992,8 @@
   "chunks": {
     "byName": {
       "runtime": 0,
-      "app": 1,
-      "vendor": 2,
+      "vendor": 1,
+      "app": 2,
       "polyfills": 3
     },
     "bySource": {},
