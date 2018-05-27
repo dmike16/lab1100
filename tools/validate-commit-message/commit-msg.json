@@ -13,7 +13,8 @@
     "scopes" : {
         "changelog" : true,
         "packing": true,
-        "core": true
+        "core": true,
+        "validation": true
     },
     "template": "'<type>(<scope>): <subject>' OR 'Revert: <type(<scope>): <subject>'"
   }
