@@ -8,6 +8,9 @@
             true,
             "no-public"
         ],
+        "no-string-literal": false,
+        "no-conditional-assignment": false,
+        "max-line-length": false,
         "no-console": [true, "log"],
         "no-var-requires": false,
         "interface-name": false,
