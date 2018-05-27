@@ -1,0 +1,19 @@
+{
+    "maxLength": 100,
+    "types": {
+      "build": true,
+      "docs": true,
+      "feat": true,
+      "fix": true,
+      "refactor": true,
+      "style": true,
+      "test": true,
+      "tool": true
+    },
+    "scopes" : {
+        "changelog" : true,
+        "packing": true,
+        "core": true
+    },
+    "template": "'<type>(<scope>): <subject>' OR 'Revert: <type(<scope>): <subject>'"
+  }
