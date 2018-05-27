@@ -46,7 +46,6 @@ export abstract class WebpackCommonPackage extends Package {
       // Entry Points
       entry: {
         polyfills: './polyfills.ts',
-        vendor: './vendor.ts',
         app: './main.ts'
       },
       // Module section
@@ -188,20 +187,6 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
                 return /[\\/]node_modules[\\/]/.test(moduleName)
                   && !chunks.some(({ name }) => name === 'polyfills');
               }
-            },
-            appStyles: {
-              name: 'app',
-              chunks: 'all',
-              enforce: true,
-              test: (module: any, chunks: any[], entry = 'app') => module.constructor.name === 'CssModule'
-                && recursiveIssuer(module) === entry
-            },
-            vendorStyles: {
-              name: 'vendor',
-              chunks: 'all',
-              enforce: true,
-              test: (module: any, chunks: any[], entry = 'vendor') => module.constructor.name === 'CssModule'
-                && recursiveIssuer(module) === entry
             }
           } as any
         }
@@ -343,7 +328,36 @@ export class WebpackServePackage extends WebpackCommonPackage {
               mangle: false
             }
           })
-        ]
+        ],
+        runtimeChunk: 'single',
+        splitChunks: {
+          maxAsyncRequests: Infinity,
+          cacheGroups: {
+            default: {
+              chunks: 'async',
+              minChunks: 2,
+              priority: 10
+            },
+            common: {
+              name: 'common',
+              chunks: 'async',
+              minChunks: 2,
+              enforce: true,
+              priority: 5
+            },
+            vendors: false,
+            vendor: {
+              name: 'vendor',
+              chunks: 'initial',
+              enforce: true,
+              test: (module: any, chunks: Array<{ name: string }>) => {
+                const moduleName = module.nameForCondition ? module.nameForCondition() : '';
+                return /[\\/]node_modules[\\/]/.test(moduleName)
+                  && !chunks.some(({ name }) => name === 'polyfills');
+              }
+            }
+          } as any
+        }
       },
 
       plugins: [
@@ -440,12 +454,12 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
   }
 }
 
-function recursiveIssuer(module: any): boolean | string {
-  if (module.issuer) {
-    return recursiveIssuer(module.issuer);
-  } else if (module.name) {
-    return merge.name;
+function recursiveIssuer(module: any): string {
+  if (module.nameForCondition) {
+    console.info(module.nameForCondition());
+    return module.nameForCondition();
   } else {
-    return false;
+    console.info('no name');
+    return '';
   }
 }
