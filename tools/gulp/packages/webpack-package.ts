@@ -37,7 +37,8 @@ export abstract class WebpackCommonPackage extends Package {
       // Resolve module
       resolve: {
         extensions: ['.ts', '.js'],
-        modules: [root, 'node_modules']
+        modules: [root, 'node_modules'],
+        mainFields: ['es2015', 'browser', 'module', 'main']
       },
       resolveLoader: {
         modules: ['node_modules']
@@ -80,7 +81,7 @@ export abstract class WebpackCommonPackage extends Package {
       plugins: [
         // Fix an angular warning
         new ContextReplacementPlugin(
-          /angular(\\|\/)core(\\|\/)(@angular|esm5|fesm5)/,
+          /angular(\\|\/)core(\\|\/)(@angular|esm5|fesm5|fesm2015)/,
           this.resolveInProject('./src'),
           {}
         )
@@ -148,9 +149,7 @@ export class WebpackBuildProdPackage extends WebpackCommonPackage {
             cache: true,
             parallel: true,
             uglifyOptions: {
-              mangle: {
-                keep_fnames: true
-              }
+              ecma: 6
             }
           }),
           new OptimizeCssAssetsPlugin({
@@ -325,7 +324,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
             parallel: true,
             cache: true,
             uglifyOptions: {
-              mangle: false
+              ecma: 6
             }
           })
         ],
