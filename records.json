@@ -9,7 +9,7 @@
         "byName": {},
         "bySource": {},
         "usedIds": [
-          0
+          1
         ]
       }
     }
@@ -53,5 +53,35 @@
       2,
       3
     ]
-  }
+  },
+  "src/app/app.component.html": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ],
+  "src/app/app.component.scss": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ]
 }
