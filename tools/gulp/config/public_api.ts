@@ -1,3 +1,6 @@
 export * from './webpack/common';
 export * from './webpack/broswer';
+export * from './webpack/styles';
+export * from './webpack/typescript';
+export * from './webpack/test';
 export { WebpackOption } from './webpack/model';

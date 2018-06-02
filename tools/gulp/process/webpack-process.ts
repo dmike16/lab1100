@@ -35,13 +35,11 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
     }
 }
 
-export function webpackServe(config: webpack.Configuration, secure: boolean, cb: (err?: any) => void): void {
+export function webpackServe(config: webpack.Configuration,  cb: (err?: any) => void): void {
     // Create a server entry point to broswer reload
     WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
     // Initialite webpack compiler
     const compiler = webpack(config);
-    // Apply progress bar plugin
-    compiler.apply(new webpack.ProgressPlugin());
     // Create the server instance
     const webpackDevServerOpts = Object.assign(config.devServer, {
         stats: {
@@ -60,7 +58,7 @@ export function webpackServe(config: webpack.Configuration, secure: boolean, cb:
             cb(err);
         } else {
             const domain = [
-                (secure ? 'https' : 'http'),
+                (config.devServer.https ? 'https' : 'http'),
                 '://', config.devServer.host, ':', config.devServer.port
             ];
             log(' ');

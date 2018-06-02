@@ -1,17 +1,19 @@
 import { WebpackOption } from './model';
-import { Configuration, ContextReplacementPlugin } from 'webpack';
+import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin } from 'webpack';
 import * as path from 'path';
 
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { version, name } = require('../../../../package.json');
 
 export function webpackCommon(wbo: WebpackOption): Configuration {
     const { root, buildConfig } = wbo;
+    const rxPaths = wbo.es2015support ? require('rxjs/_esm2015/path-mapping') : require('rxjs/_esm5/path-mapping');
     const resolve = {
         extensions: ['.ts', '.tsx', '.mjs', '.js'],
         modules: [root, 'node_modules'],
-        mainFields: [
-            ...(wbo.es2015support ? ['es2015'] : []),
-            'browser', 'module', 'main']
+        alias: rxPaths()
     };
 
     const uglifyOptions = {
@@ -29,9 +31,16 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         mangle: wbo.buildConfig.platform === 'broswer'
     };
 
+    const cacheOPT = buildConfig.buildOptimization ?
+        {
+            recordsPath: path.resolve(root, buildConfig.recordsPath),
+            cache: true
+        } : {};
+
     return {
         mode: buildConfig.env,
         context: root,
+        ...cacheOPT,
         resolve,
         resolveLoader: {
             modules: ['node_modules']
@@ -39,6 +48,12 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         entry: {
             polyfills: './polyfills.ts',
             app: './main.ts'
+        },
+        output: {
+            path: path.resolve(root, buildConfig.outputPath),
+            publicPath: buildConfig.deployPath,
+            filename: '[name].[chunkhash].js',
+            chunkFilename: '[id].[chunkhash].chunk.js'
         },
         module: {
             rules: [
@@ -51,19 +66,36 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                 },
                 // Image and fonts rule
                 {
-                    test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-                    use: ['file-loader?name=assets/[name].[hash].[ext]']
+                    test: /\.(?:svg|eot|cur)$/,
+                    use : [{
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[hash].[ext]'
+                        }
+                    }]
                 },
-                // Css in app folder rule
                 {
-                    test: /.scss$/,
-                    include: path.resolve(root, 'src', 'app'),
-                    use: ['raw-loader', 'sass-loader']
+                    test: /\.(?:png|jpe?g|gif|woff|woff2|ttf|ani|ico)$/,
+                    use : [{
+                        loader: 'url-loader',
+                        options: {
+                            name: '[name].[hash].[ext]',
+                            limit: 10000
+                        }
+                    }]
                 },
                 // Supress warning on using SystemJS inside angular core
                 {
                     test: /[\/\\]@angular[\/\\]core[\/\\].+\.js$/,
                     parser: { system: true }
+                },
+                {
+                    test: /\.js$/,
+                    exclude: /(ngfactory|ngstyle).js$/,
+                    enforce: 'pre',
+                    use: [
+                        { loader: 'source-map-loader' }
+                    ]
                 }
             ]
         },
@@ -75,45 +107,35 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                     cache: true,
                     parallel: true,
                     uglifyOptions
-                })
-            ],
-            runtimeChunk: 'single',
-            splitChunks: {
-                maxAsyncRequests: Infinity,
-                cacheGroups: {
-                    default: {
-                        chunks: 'async',
-                        minChunks: 2,
-                        priority: 10
-                    },
-                    common: {
-                        name: 'common',
-                        chunks: 'async',
-                        minChunks: 2,
-                        enforce: true,
-                        priority: 5
-                    },
-                    vendors: false,
-                    vendor: {
-                        name: 'vendor',
-                        chunks: 'initial',
-                        enforce: true,
-                        test: (module: any, chunks: Array<{ name: string }>) => {
-                            const moduleName = module.nameForCondition ? module.nameForCondition() : '';
-                            return /[\\/]node_modules[\\/]/.test(moduleName)
-                                && !chunks.some(({ name }) => name === 'polyfills');
+                }),
+                ...(buildConfig.higherCompression ? new OptimizeCssAssetsPlugin({
+                    cssProcessorOptions: {
+                        map: {
+                            inline: false
                         }
                     }
-                } as any
-            }
+                }) : [])
+            ]
         },
         plugins: [
             // Fix an angular warning
             new ContextReplacementPlugin(
                 /angular(\\|\/)core(\\|\/)(@angular|esm5|fesm5|fesm2015)/,
-                path.resolve(root, 'src'),
+                root,
                 {}
-            )
+            ),
+            // Clean dist on rebuild
+            new CleanWebpackPlugin([path.resolve(root, buildConfig.outputPath)], {
+                allowExternal: true
+            }),
+            new ProgressPlugin(),
+            new HashedModuleIdsPlugin(),
+            new DefinePlugin({
+                'process.env': {
+                    VERSION: JSON.stringify(version),
+                    PROJECT_NAME: JSON.stringify(name)
+                }
+            })
         ]
     };
 }
