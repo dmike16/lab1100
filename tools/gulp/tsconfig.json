@@ -29,6 +29,9 @@
       ],
       "@ngx-lab1100/tasks": [
         "tasks/index"
+      ],
+      "@ngx-lab1100/configuration": [
+        "config/index"
       ]
     }
   },
