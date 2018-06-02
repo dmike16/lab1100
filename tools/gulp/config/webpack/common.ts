@@ -8,7 +8,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const { version, name } = require('../../../../package.json');
 
 export function webpackCommon(wbo: WebpackOption): Configuration {
-    const { root, buildConfig } = wbo;
+    const { root, buildConfig, projectRoot } = wbo;
     const rxPaths = wbo.es2015support ? require('rxjs/_esm2015/path-mapping') : require('rxjs/_esm5/path-mapping');
     const resolve = {
         extensions: ['.ts', '.tsx', '.mjs', '.js'],
@@ -33,7 +33,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
 
     const cacheOPT = buildConfig.buildOptimization ?
         {
-            recordsPath: path.resolve(root, buildConfig.recordsPath),
+            recordsPath: path.resolve(projectRoot, buildConfig.recordsPath),
             cache: true
         } : {};
 
@@ -108,13 +108,13 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                     parallel: true,
                     uglifyOptions
                 }),
-                ...(buildConfig.higherCompression ? new OptimizeCssAssetsPlugin({
+                ...(buildConfig.higherCompression ? [new OptimizeCssAssetsPlugin({
                     cssProcessorOptions: {
                         map: {
                             inline: false
                         }
                     }
-                }) : [])
+                })] : [])
             ]
         },
         plugins: [

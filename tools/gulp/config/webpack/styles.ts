@@ -3,7 +3,7 @@ import { Configuration, Rule, loader, Loader } from 'webpack';
 import * as path from 'path';
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const autoprefix = require('autoprefix');
+const autoprefix = require('autoprefixer');
 
 export function webpackStyles(wbo: WebpackOption): Configuration {
     const { root, buildConfig } = wbo;
@@ -85,7 +85,7 @@ function globalRules(wbo: WebpackOption, rules: Rule[]): Rule[] {
         test,
         use: [
             wbo.buildConfig.extractCss ? MiniCssExtractPlugin.loader : 'style-loader',
-            { loader: 'row-loader' },
+            { loader: 'raw-loader' },
             {
                 loader: 'postcss-loader',
                 options: {

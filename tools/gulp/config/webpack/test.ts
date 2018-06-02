@@ -13,7 +13,7 @@ export function webpackTest(wbo: WebpackOption): Configuration {
                 'browser', 'module', 'main']
         },
         entry: {
-            main: path.resolve(root, buildConfig.main)
+            main:  buildConfig.main
         },
         optimization: {
             splitChunks: {

@@ -37,7 +37,7 @@ function webpackTypescript(wbo: WebpackOption, skipCodeGeneration: boolean = fal
         plugins: [
             new AngularCompilerPlugin({
                 tsConfigPath,
-                mainPath: path.resolve(root, buildConfig.mainPath),
+                mainPath: path.resolve(root, buildConfig.main),
                 skipCodeGeneration,
                 sourceMap: buildConfig.sourceMap,
                 ...i18nFileAndFormat,

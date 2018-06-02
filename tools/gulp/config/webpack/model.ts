@@ -3,7 +3,7 @@ export interface WebpackOption {
     root: string;
     buildConfig: BuildOption;
     tsConfigPath: string;
-    devServer: any;
+    projectRoot: string;
 }
 
 export interface BuildOption {
@@ -17,13 +17,12 @@ export interface BuildOption {
     outputPath: string;
     deployPath: string;
     buildOptimization: boolean;
-    recordsPath: string;
-    mainPath: string;
+    recordsPath?: string;
     main: string;
-    i18nOutFile: string;
-    i18nOutFormat: string;
-    i18nLocale: string;
-    i18nInFile: string;
-    i18nInFormat: string;
-    i18nMissingTranslation: string;
+    i18nOutFile?: string;
+    i18nOutFormat?: string;
+    i18nLocale?: string;
+    i18nInFile?: string;
+    i18nInFormat?: string;
+    i18nMissingTranslation?: string;
 }
