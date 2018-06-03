@@ -2,7 +2,10 @@ import {
   Configuration
 } from 'webpack';
 import { Package, root } from './package';
-import { WebpackOption, webpackCommon, webpackBroswer, webpackStyles, webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget } from '@ngx-lab1100/configuration';
+import {
+  WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
+  webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption
+} from '@ngx-lab1100/configuration';
 import { readFileSync } from 'fs';
 
 const merge = require('webpack-merge');
@@ -22,7 +25,37 @@ export abstract class WebpackCommonPackage extends Package {
       root: this.resolveInProject('src'),
       tsConfigPath: tsConfig,
       es2015support: target === 'es2015' || target === 'es6' || target === 'esnext',
-      buildConfig: null
+      buildConfig: {
+        env: 'development',
+        buildOptimization: false,
+        deployPath: '/',
+        sourceMap: true,
+        higherCompression: false,
+        extractCss: false,
+        assets: [{ input: 'assets', output: '/assets', glob: '**/*' }],
+        ingorePath: [],
+        indexHTML: 'index.html',
+        platform: 'broswer',
+        outputPath: '../build',
+        main: './main.ts',
+        styles: [{ name: 'styles', path: './styles.scss' }]
+      }
+    };
+  }
+
+  protected mergeWBO(wbo: WebpackOption, defaultBuildOption: Partial<BuildOption>): WebpackOption {
+    const { root, projectRoot, tsConfigPath, es2015support, buildConfig } = wbo ||
+      { root: undefined, projectRoot: undefined, tsConfigPath: undefined, es2015support: undefined, buildConfig: undefined };
+    return {
+      root: root || this.wbo.root,
+      projectRoot: projectRoot || this.wbo.projectRoot,
+      tsConfigPath: tsConfigPath || this.wbo.tsConfigPath,
+      es2015support: es2015support === undefined ? this.wbo.es2015support : es2015support,
+      buildConfig: {
+        ...this.wbo.buildConfig,
+        ...defaultBuildOption,
+        ...buildConfig
+      }
     };
   }
 }
@@ -33,24 +66,14 @@ export abstract class WebpackCommonPackage extends Package {
 export class WebpackBuildJITPackage extends WebpackCommonPackage {
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(`${name}:jit`, dependencies);
-    this.wbo = {
-      ...this.wbo,
-      buildConfig: {
-        env: 'production',
-        buildOptimization: true,
-        deployPath: '/',
-        recordsPath: 'records.json',
-        extractCss: true,
-        higherCompression: true,
-        sourceMap: true,
-        indexHTML: 'index.html',
-        platform: 'broswer',
-        outputPath: '../build',
-        main: './main.ts',
-        styles: []
-      },
-      ...wco
-    };
+    this.wbo = this.mergeWBO(wco, {
+      env: 'production',
+      buildOptimization: true,
+      deployPath: '/',
+      recordsPath: 'records.json',
+      extractCss: true,
+      higherCompression: true
+    });
   }
 
   getConfig(): Configuration {
@@ -70,24 +93,14 @@ export class WebpackBuildAOTPackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(`${name}:aot`, dependencies);
-    this.wbo = {
-      ...this.wbo,
-      buildConfig: {
-        env: 'production',
-        buildOptimization: true,
-        deployPath: '/',
-        recordsPath: 'records.json',
-        extractCss: true,
-        higherCompression: true,
-        sourceMap: true,
-        indexHTML: 'index.html',
-        platform: 'broswer',
-        outputPath: '../build',
-        main: './main.ts',
-        styles: []
-      },
-      ...wco
-    };
+    this.wbo = this.mergeWBO(wco, {
+      env: 'production',
+      buildOptimization: true,
+      deployPath: '/',
+      recordsPath: 'records.json',
+      extractCss: true,
+      higherCompression: true
+    });
   }
 
   getConfig(): Configuration {
@@ -107,23 +120,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = {
-      ...this.wbo,
-      buildConfig: {
-        env: 'development',
-        buildOptimization: false,
-        deployPath: '/',
-        extractCss: false,
-        higherCompression: false,
-        sourceMap: true,
-        indexHTML: 'index.html',
-        platform: 'broswer',
-        outputPath: '../build',
-        main: './main.ts',
-        styles: []
-      },
-      ...wco
-    };
+    this.wbo = this.mergeWBO(wco, {});
   }
 
   getConfig(): Configuration {
@@ -155,23 +152,7 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = {
-      ...this.wbo,
-      buildConfig: {
-        env: 'development',
-        buildOptimization: false,
-        deployPath: '/',
-        extractCss: false,
-        higherCompression: false,
-        sourceMap: true,
-        indexHTML: 'index.html',
-        platform: 'broswer',
-        outputPath: '../build',
-        main: './main.ts',
-        styles: []
-      },
-      ...wco
-    };
+    this.wbo = this.mergeWBO(wco, {});
   }
 
   getConfig(): Configuration {

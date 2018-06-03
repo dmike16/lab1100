@@ -5,16 +5,39 @@ import * as path from 'path';
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { version, name } = require('../../../../package.json');
 
 export function webpackCommon(wbo: WebpackOption): Configuration {
     const { root, buildConfig, projectRoot } = wbo;
+    const extraPlugin: any[] = [];
     const rxPaths = wbo.es2015support ? require('rxjs/_esm2015/path-mapping') : require('rxjs/_esm5/path-mapping');
     const resolve = {
         extensions: ['.ts', '.tsx', '.mjs', '.js'],
         modules: [root, 'node_modules'],
         alias: rxPaths()
     };
+
+    // asset copy
+    if (buildConfig.assets) {
+        const copyWebpackPatterns = buildConfig.assets.map(({ input, output, glob }) => {
+            input = path.resolve(root, input);
+            input = input.endsWith('/') ? input : `${input}/`;
+            output = output.endsWith('/') ? output : `${output}/`;
+
+            return {
+                context: input,
+                to: output.replace(/^\//, ''),
+                from: {
+                    glob,
+                    dot: true
+                }
+            };
+        });
+        extraPlugin.push(new CopyWebpackPlugin(copyWebpackPatterns, {
+            ignore: ['.gitkeep', ' ** /.DS_Store', '**/Thumbs.db', ...buildConfig.ingorePath]
+        }));
+    }
 
     const uglifyOptions = {
         ecma: wbo.es2015support ? 6 : 5,
@@ -67,7 +90,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                 // Image and fonts rule
                 {
                     test: /\.(?:svg|eot|cur)$/,
-                    use : [{
+                    use: [{
                         loader: 'file-loader',
                         options: {
                             name: '[name].[hash].[ext]'
@@ -76,7 +99,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                 },
                 {
                     test: /\.(?:png|jpe?g|gif|woff|woff2|ttf|ani|ico)$/,
-                    use : [{
+                    use: [{
                         loader: 'url-loader',
                         options: {
                             name: '[name].[hash].[ext]',
@@ -136,6 +159,6 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                     PROJECT_NAME: JSON.stringify(name)
                 }
             })
-        ]
+            , ...extraPlugin]
     };
 }

@@ -12,6 +12,8 @@ export interface BuildOption {
     higherCompression: boolean;
     extractCss: boolean;
     styles: Array<{name: string; path: string}>;
+    assets: AssetsOption[];
+    ingorePath: string[];
     sourceMap: boolean;
     indexHTML: string;
     outputPath: string;
@@ -25,4 +27,10 @@ export interface BuildOption {
     i18nInFile?: string;
     i18nInFormat?: string;
     i18nMissingTranslation?: string;
+}
+
+export interface AssetsOption {
+    input: string;
+    output: string;
+    glob: string;
 }

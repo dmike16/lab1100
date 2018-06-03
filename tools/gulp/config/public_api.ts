@@ -4,4 +4,4 @@ export * from './webpack/styles';
 export * from './webpack/typescript';
 export * from './webpack/test';
 export * from './webpack/utils';
-export { WebpackOption } from './webpack/model';
+export { WebpackOption, BuildOption } from './webpack/model';
