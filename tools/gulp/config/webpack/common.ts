@@ -45,11 +45,16 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         output: {
             ascii_only: true,
             comments: false,
-            webkit: true
+            webkit: true,
+            beautify: buildConfig.debug
         },
         ...(wbo.buildConfig.platform === 'server' ? {} : {
-            inline: wbo.es2015support ? 1 : 3,
-            passes: wbo.buildConfig.higherCompression ? 3 : 1
+            compress: {
+                // Workaround known uglify-es issue
+                // See https://github.com/mishoo/UglifyJS2/issues/2949#issuecomment-368070307
+                inline: wbo.es2015support ? 1 : 3,
+                passes: wbo.buildConfig.higherCompression ? 3 : 1
+            }
         }),
         mangle: wbo.buildConfig.platform === 'broswer'
     };

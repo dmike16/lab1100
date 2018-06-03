@@ -32,6 +32,7 @@ export abstract class WebpackCommonPackage extends Package {
         sourceMap: true,
         higherCompression: false,
         extractCss: false,
+        debug: false,
         assets: [{ input: 'assets', output: '/assets', glob: '**/*' }],
         ingorePath: [],
         indexHTML: 'index.html',

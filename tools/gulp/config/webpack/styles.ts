@@ -1,13 +1,14 @@
 import { WebpackOption } from './model';
 import { Configuration, Rule, loader, Loader } from 'webpack';
 import * as path from 'path';
+import { CssRawLoader } from './loader/webpack';
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const autoprefix = require('autoprefixer');
 
 export function webpackStyles(wbo: WebpackOption): Configuration {
     const { root, buildConfig } = wbo;
-    const entryPoints: {[key: string]: string} = {};
+    const entryPoints: { [key: string]: string } = {};
     const extraPlugin = [];
 
     buildConfig.styles.forEach((style) => {
@@ -62,7 +63,7 @@ function baseStylusRule(wbo: WebpackOption): Rule {
 
 function componentRules(wbo: WebpackOption, rules: Rule[]): Rule[] {
     return rules.map<Rule>(({ test, use }) => ({
-        include: path.resolve(wbo.root,  'app'),
+        include: path.resolve(wbo.root, 'app'),
         test,
         use: [
             { loader: 'raw-loader' },
@@ -85,7 +86,7 @@ function globalRules(wbo: WebpackOption, rules: Rule[]): Rule[] {
         test,
         use: [
             wbo.buildConfig.extractCss ? MiniCssExtractPlugin.loader : 'style-loader',
-            { loader: 'raw-loader' },
+            { loader: wbo.buildConfig.extractCss ? CssRawLoader : 'raw-loader' },
             {
                 loader: 'postcss-loader',
                 options: {

@@ -19,6 +19,7 @@ export interface BuildOption {
     outputPath: string;
     deployPath: string;
     buildOptimization: boolean;
+    debug: boolean;
     recordsPath?: string;
     main: string;
     i18nOutFile?: string;
