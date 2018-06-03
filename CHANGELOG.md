@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+-mod refacor webpack configuration
 -add classlist pollyfill
 -add husky npm dep
 -upgrade to webpack 4.x.x
@@ -16,3 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  -add first component test
  -add test karma+jasmine configuration
  -create initial configuration using the bash script angular_setup
+
+## [Bugs]
+
+-test karma test configuration not working
