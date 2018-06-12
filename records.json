@@ -1,0 +1,59 @@
+{
+  "html-webpack-plugin for \"index.html\"": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
+  "mini-css-extract-plugin ../tools/gulp/config/webpack/loader/css-raw-loader.ts!../../node_modules/postcss-loader/lib/index.js??extracted!../../node_modules/sass-loader/lib/loader.js??ref--13-3!styles.scss": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {
+          "mini-css-extract-plugin": 0
+        },
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
+  "modules": {
+    "byIdentifier": {
+      "css ../tools/gulp/config/webpack/loader/css-raw-loader.ts!../../node_modules/postcss-loader/lib/index.js??extracted!../../node_modules/sass-loader/lib/loader.js??ref--13-3!styles.scss 0": 0
+    },
+    "usedIds": {
+      "0": 0
+    }
+  },
+  "chunks": {
+    "byName": {
+      "runtime": 0,
+      "vendor": 1,
+      "styles": 2,
+      "app": 3,
+      "polyfills": 4
+    },
+    "bySource": {},
+    "usedIds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  }
+}

@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es6",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
@@ -12,10 +12,28 @@
     "lib": [
       "es6"
     ],
-    "typeRoots": ["./node_modules", "./types"],
-    "types": ["node", "gulp", "ansi-colors","package.json", "webpack", "webpack-dev-server", "webpack-merge", "extract-text-webpack-plugin", "clean-webpack-plugin",
-      "html-webpack-plugin","pump","webpack-stream","run-sequence","gulp-zip", "karma"
-    ]
+    "typeRoots": [
+      "./node_modules",
+      "./types"
+    ],
+    "types": [
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@ngx-lab1100/process": [
+        "process/index"
+      ],
+      "@ngx-lab1100/packages": [
+        "packages/index"
+      ],
+      "@ngx-lab1100/tasks": [
+        "tasks/index"
+      ],
+      "@ngx-lab1100/configuration": [
+        "config/index"
+      ]
+    }
   },
   "files": [
     "gulpfile.ts"

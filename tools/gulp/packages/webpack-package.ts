@@ -1,97 +1,62 @@
-import ExtractTextPlugin = require('extract-text-webpack-plugin');
 import {
-  ContextReplacementPlugin,
-  NoEmitOnErrorsPlugin,
-  HashedModuleIdsPlugin,
-  optimize,
-  DefinePlugin,
-  ProgressPlugin,
   Configuration
 } from 'webpack';
-import merge = require('webpack-merge');
-import HtmlWebpackPlugin = require('html-webpack-plugin');
-import CleanWebpackPlugin = require('clean-webpack-plugin');
-import { AngularCompilerPlugin, ExtractI18nPlugin, AngularCompilerPluginOptions } from '@ngtools/webpack';
-import { version, name } from '../../../package.json';
+import { Package, root } from './package';
+import {
+  WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
+  webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption
+} from '@ngx-lab1100/configuration';
+import { readFileSync } from 'fs';
 
-import Package from './package';
-
-const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
-const VERSION = version;
-const PROJECT_NAME = name;
+const merge = require('webpack-merge');
 /**
  * Common class to all webpack packages
  */
 export abstract class WebpackCommonPackage extends Package {
+
+  protected wbo: WebpackOption;
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:webpack`, dependencies);
+    const tsConfig = this.resolveInProject('src', 'tsconfig.app.json');
+    const target = resolveTsConfigTarget(tsConfig).toLowerCase();
+
+    this.wbo = {
+      projectRoot: this.resolveInProject('.'),
+      root: this.resolveInProject('src'),
+      tsConfigPath: tsConfig,
+      es2015support: target === 'es2015' || target === 'es6' || target === 'esnext',
+      buildConfig: {
+        env: 'development',
+        buildOptimization: false,
+        deployPath: '/',
+        sourceMap: true,
+        higherCompression: false,
+        extractCss: false,
+        debug: false,
+        assets: [{ input: 'assets', output: '/assets', glob: '**/*' }],
+        ingorePath: [],
+        indexHTML: 'index.html',
+        platform: 'broswer',
+        outputPath: '../build',
+        main: './main.ts',
+        styles: [{ name: 'styles', path: './styles.scss' }]
+      }
+    };
   }
 
-  getRules(): [any] {
-    return null;
-  }
-
-  getConfig(): Configuration {
+  protected mergeWBO(wbo: WebpackOption, defaultBuildOption: Partial<BuildOption>): WebpackOption {
+    const { root, projectRoot, tsConfigPath, es2015support, buildConfig } = wbo ||
+      { root: undefined, projectRoot: undefined, tsConfigPath: undefined, es2015support: undefined, buildConfig: undefined };
     return {
-      // Entry Points
-      entry: {
-        polyfills: './src/polyfills.ts',
-        vendor: './src/vendor.ts',
-        app: './src/main.ts'
-      },
-      // Ext to resolve when is not specified
-      resolve: {
-        extensions: ['.ts', '.js']
-      },
-      // Module section
-      module: {
-        rules: [
-          // Html rule
-          {
-            test: /\.html$/,
-            use: {
-              loader: 'html-loader',
-              options: { minimize: false }
-            }
-          },
-          // Image and fonts rule
-          {
-            test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-            use: ['file-loader?name=assets/[name].[hash].[ext]']
-          },
-          // Css in assets rule
-          {
-            test: /\.scss$/,
-            exclude: this.resolveInProject('src', 'app'),
-            use: ExtractTextPlugin.extract({
-              fallback: 'style-loader',
-              use: [{
-                loader: 'css-loader',
-                options: { sourceMap: true }
-              },
-              {
-                loader: 'sass-loader',
-                options: { sourceMap: true }
-              }]
-            })
-          },
-          // Css in app folder rule
-          {
-            test: /.scss$/,
-            include: this.resolveInProject('src', 'app'),
-            use: ['raw-loader', 'sass-loader']
-          }
-        ]
-      },
-
-      plugins: [
-        // Fix an angular2 warning
-        new ContextReplacementPlugin(
-          /angular(\\|\/)core(\\|\/)(@angular|esm5)/,
-          this.resolveInProject('./src'),
-          {}
-        )
-      ]
+      root: root || this.wbo.root,
+      projectRoot: projectRoot || this.wbo.projectRoot,
+      tsConfigPath: tsConfigPath || this.wbo.tsConfigPath,
+      es2015support: es2015support === undefined ? this.wbo.es2015support : es2015support,
+      buildConfig: {
+        ...this.wbo.buildConfig,
+        ...defaultBuildOption,
+        ...buildConfig
+      }
     };
   }
 }
@@ -99,232 +64,105 @@ export abstract class WebpackCommonPackage extends Package {
  * Build webpack package
  *
  */
-export class WebpackBuildProdPackage extends WebpackCommonPackage {
-
-  getRules(): [any] {
-    return [{
-      test: /\.ts$/,
-      use: [{
-        loader: 'awesome-typescript-loader',
-        options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
-        }
-      },
-        'angular2-template-loader'
-      ]
-    }];
+export class WebpackBuildJITPackage extends WebpackCommonPackage {
+  constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
+    super(`${name}:jit`, dependencies);
+    this.wbo = this.mergeWBO(wco, {
+      env: 'production',
+      buildOptimization: true,
+      deployPath: '/',
+      recordsPath: 'records.json',
+      extractCss: true,
+      higherCompression: true
+    });
   }
 
   getConfig(): Configuration {
-    return merge(super.getConfig(), {
-      devtool: 'source-map',
-
-      output: {
-        path: this.resolveInProject('build'),
-        publicPath: '/lab1100/',
-        filename: '[name].[chunkhash].js',
-        chunkFilename: '[id].[chunkhash].chunk.js'
-      },
-
-      module: {
-        rules: this.getRules()
-      },
-
-      plugins: [
-        // Clean dist on rebuild
-        new CleanWebpackPlugin([this.resolveInProject('build')], {
-          allowExternal: true
-        }),
-        new NoEmitOnErrorsPlugin(),
-        new HashedModuleIdsPlugin(),
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
-        new optimize.CommonsChunkPlugin({
-          name: 'boilerplate',
-          minChunks: Infinity
-        }),
-        new optimize.UglifyJsPlugin({
-          sourceMap: true,
-          mangle: {
-            keep_fnames: true
-          }
-
-        }),
-        new ExtractTextPlugin('[name].[chunkhash].css'),
-        new DefinePlugin({
-          'process.env': {
-            ENV: JSON.stringify(ENV),
-            VERSION: JSON.stringify(VERSION),
-            PROJECT_NAME: JSON.stringify(PROJECT_NAME)
-          }
-        }),
-        // Fill the index.html with buldle geneated
-        new HtmlWebpackPlugin({
-          template: 'src/index.html'
-        }),
-        new ProgressPlugin()
-      ]
-    });
+    const configurations = [
+      webpackCommon(this.wbo),
+      webpackBroswer(this.wbo),
+      webpackStyles(this.wbo),
+      webpackJIT(this.wbo)
+    ];
+    return merge(configurations);
   }
 }
 /**
  * AOT build package
  */
-export class WebpackBuildAOTPackage extends WebpackBuildProdPackage {
-  private aotOptions: AngularCompilerPluginOptions;
+export class WebpackBuildAOTPackage extends WebpackCommonPackage {
 
-  constructor(name: string, dependencies?: Package[]) {
+  constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(`${name}:aot`, dependencies);
-  }
-
-  getRules(): [any] {
-    return [{
-      test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
-      loader: '@ngtools/webpack'
-    }];
-  }
-
-  set options(value: AngularCompilerPluginOptions) {
-    this.aotOptions = Object.assign({
-      tsConfigPath: this.resolveInProject('src', 'tsconfig.app.json'),
-      entryModule: this.resolveInProject('src', 'app', 'app.module#AppModule'),
-      sourceMap: true
-    }, value);
+    this.wbo = this.mergeWBO(wco, {
+      env: 'production',
+      buildOptimization: true,
+      deployPath: '/',
+      recordsPath: 'records.json',
+      extractCss: true,
+      higherCompression: true
+    });
   }
 
   getConfig(): Configuration {
-    return merge(super.getConfig(), {
-      plugins: [
-        new AngularCompilerPlugin(this.aotOptions)
-      ]
-    });
+    const configurations = [
+      webpackCommon(this.wbo),
+      webpackBroswer(this.wbo),
+      webpackStyles(this.wbo),
+      webpackAOT(this.wbo)
+    ];
+    return merge(configurations);
   }
 }
 /**
  * Serve webpack server pacakge
  */
 export class WebpackServePackage extends WebpackCommonPackage {
-  https: any = true;
 
-  getRules(): [any] {
-    return [{
-      test: /\.ts$/,
-      use: [{
-        loader: 'awesome-typescript-loader',
-        options: {
-          configFileName: this.resolveInProject('src', 'tsconfig.app.json')
-        }
-      },
-        'angular2-template-loader'
-      ]
-    }];
+  constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
+    super(name, dependencies);
+    this.wbo = this.mergeWBO(wco, {});
   }
 
   getConfig(): Configuration {
-    return merge(super.getConfig(), {
-      devtool: 'cheap-module-eval-source-map',
-
-      output: {
-        path: this.resolveInProject('dist'),
-        publicPath: '/',
-        filename: '[name].js',
-        chunkFilename: '[id].chunk.js'
-      },
-
-      module: {
-        rules: this.getRules()
-      },
-
-      plugins: [
-        new ExtractTextPlugin('[name].css'),
-        new optimize.CommonsChunkPlugin({
-          names: ['app', 'vendor', 'polyfills']
-        }),
-        // Fill the index.html with buldle geneated
-        new HtmlWebpackPlugin({
-          template: 'src/index.html'
-        })
-      ],
-
-      devServer: {
-        historyApiFallback: true,
-        stats: 'minimal',
-        https: (this.https === true ? true : this.https ? this.https : false),
-        host: 'localhost',
-        port: 4200
+    const configurations = [
+      webpackCommon(this.wbo),
+      webpackBroswer(this.wbo),
+      webpackStyles(this.wbo),
+      webpackJIT(this.wbo),
+      {
+        devServer: {
+          historyApiFallback: true,
+          stats: 'minimal',
+          https: {
+            key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
+            cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
+          },
+          host: 'localhost',
+          port: 4200
+        }
       }
-    });
+    ];
+    return merge(configurations);
   }
 }
 /**
  * Test webpack Karma package
  */
 export class WebpackKarmaPackage extends WebpackCommonPackage {
-  getRules(): [any] {
-    return [
-      {
-        test: /\.ts$/,
-        use: [{
-          loader: 'awesome-typescript-loader',
-          options: {
-            configFileName: this.resolveInProject('src', 'tsconfig.spec.json')
-          }
-        },
-          'angular2-template-loader'
-        ]
-      },
-      // Html rule
-      {
-        test: /\.html$/,
-        use: {
-          loader: 'html-loader',
-          options: { minimize: false }
-        }
-      },
-      // Image and fonts rule
-      {
-        test: /\.(?:png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-        use: 'null-loader'
-      },
-      // Css in assets rule
-      {
-        test: /\.scss$/,
-        exclude: this.resolveInProject('src', 'app'),
-        use: 'null-loader'
-      },
-      // Css in app folder rule
-      {
-        test: /.scss$/,
-        include: this.resolveInProject('src', 'app'),
-        use: ['raw-loader', 'sass-loader']
-      }
-    ];
+
+  constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
+    super(name, dependencies);
+    this.wbo = this.mergeWBO(wco, {});
   }
 
   getConfig(): Configuration {
-    const parent = super.getConfig();
-    delete parent.entry;
-    delete parent.module;
-
-    return merge(parent, {
-      devtool: 'cheap-module-eval-source-map',
-
-      output: {
-        path: this.resolveInProject('dist'),
-        publicPath: '/',
-        filename: '[name].js',
-        chunkFilename: '[id].chunk.js'
-      },
-
-      module: {
-        rules: this.getRules()
-      },
-
-      plugins: [
-        new NoEmitOnErrorsPlugin(),
-        new ProgressPlugin()
-      ]
-    });
+    const configurations = [
+      webpackCommon(this.wbo),
+      webpackTest(this.wbo),
+      webpackStyles(this.wbo),
+      webpackJIT(this.wbo)
+    ];
+    return merge(configurations);
   }
 }

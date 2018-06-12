@@ -1,8 +1,8 @@
 import { dirname } from 'path';
 
-import Package from './package';
+import {Package} from './package';
 
-export default class E2eProtractorPackage extends Package {
+export  class E2eProtractorPackage extends Package {
     constructor(name: string, dependecies?: Package[]) {
         super(`${name}:protractor`, dependecies);
     }

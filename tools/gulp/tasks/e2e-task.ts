@@ -1,7 +1,7 @@
 import { task } from 'gulp';
 // TODO select suite with gulp arg
 
-import E2eProtractorPackage from '../packages/e2e-protractor';
+import { E2eProtractorPackage } from '@ngx-lab1100/packages';
 
 export function createE2eProtractorTask(e2ePack: E2eProtractorPackage) {
     task(`${e2ePack.getName()}:e2e`, () => {

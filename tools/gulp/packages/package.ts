@@ -4,7 +4,7 @@ import { resolve, join } from 'path';
  * @param  {string}   name         [package name]
  * @param  {Package[]} dependencies [dependencies]
  */
-export default abstract class Package {
+export  abstract class Package {
 
   constructor(protected name: string, protected dependencies?: Package[]) { }
 

@@ -1,10 +1,9 @@
 /**
  * Gulp file usgin ts-node + typescript
  */
-const path = require('path');
-const tsconfigPath = path.join(__dirname,'tools/gulp/tsconfig.json');
+'use strict';
 
-require('ts-node').register({
-  project: tsconfigPath
-});
+const path = require('path');
+const tsconfigPath = path.join(__dirname, 'tools/gulp/tsconfig.json');
+require('./lib/bootstrap-local').bootstrap(tsconfigPath);
 require('./tools/gulp/gulpfile');

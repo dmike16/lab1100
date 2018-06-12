@@ -1,0 +1,12 @@
+{
+  "serve": "build",
+  "servePrefix": "/lab1100",
+  "port": 8000,
+  "bind": "localhost",
+  "interval": 500,
+  "delay": 0,
+  "noReload": true,
+  "quiet": false,
+  "http2": true,
+  "historyindex": "/index.html"
+}
