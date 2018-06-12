@@ -7,30 +7,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Credits
 
--[Angular-Cli](https://github.com/angular/angular-cli)
--[Karma](https://github.com/karma-runner/karma)
--[Webpack](https://github.com/webpack/webpack)
--[Webpack-karma-plugin](https://github.com/webpack-contrib/karma-webpack)
+- [Angular-Cli](https://github.com/angular/angular-cli)
+- [Karma](https://github.com/karma-runner/karma)
+- [Webpack](https://github.com/webpack/webpack)
+- [Webpack-karma-plugin](https://github.com/webpack-contrib/karma-webpack)
 
 ## [Unreleased]
 
 ### Added
 
--add classlist pollyfill
--add husky npm dep
- -add tslint configuration file
- -add protractor e2e configuration
- -add first component test
- -add test karma+jasmine configuration
- -create initial configuration using the bash script angular_setup
+- add classlist pollyfill
+- add husky npm dep
+- add tslint configuration file
+- add protractor e2e configuration
+- add first component test
+- add test karma+jasmine configuration
+- create initial configuration using the bash script angular_setup
 
 ### Changed
 
--mod refacor webpack configuration
--upgrade to webpack 4.x.x
--upgrade to angular 6.x.x
-
+- mod refacor webpack configuration
+- upgrade to webpack 4.x.x
+- upgrade to angular 6.x.x
 
 ## [Bugs]
 
--test karma test configuration not working
+- test karma test configuration not working
