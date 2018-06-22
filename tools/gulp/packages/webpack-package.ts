@@ -131,15 +131,16 @@ export class WebpackServePackage extends WebpackCommonPackage {
       webpackStyles(this.wbo),
       webpackJIT(this.wbo),
       {
-        devServer: {
+        serve: {
           historyApiFallback: true,
-          stats: 'minimal',
+           stats: 'minimal',
           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          port: 4200
+          port: 4200,
+          http2: true
         }
       }
     ];

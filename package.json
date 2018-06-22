@@ -59,7 +59,7 @@
     "@types/jasmine": "^2.8.7",
     "@types/jasminewd2": "^2.0.3",
     "@types/karma": "^1.7.3",
-    "@types/node": "^8.9.4",
+    "@types/node": "^10.3.4",
     "@types/pump": "^1.0.1",
     "@types/run-sequence": "^0.0.30",
     "@types/webpack": "^4.1.6",
@@ -110,6 +110,7 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.8.1",
     "webpack-dev-server": "^3.1.4",
-    "webpack-merge": "^4.1.2"
+    "webpack-merge": "^4.1.2",
+    "webpack-serve": "^1.0.4"
   }
 }

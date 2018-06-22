@@ -3,6 +3,8 @@ import log = require('fancy-log');
 import webpack = require('webpack');
 import WebpackDevServer = require('webpack-dev-server');
 
+const serve = require('webpack-serve');
+
 export function webpackCompile(config: webpack.Configuration, cb: (err?: any) => void): void {
     try {
         // Configure the compiler
@@ -35,7 +37,23 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
     }
 }
 
-export function webpackServe(config: webpack.Configuration,  cb: (err?: any) => void): void {
+export function webpackServe(config: webpack.Configuration, cb: (err?: any) => void): void {
+    const compiler = webpack(config);
+    serve({
+        compiler,
+        hot: false,
+        add: (app: any, midd: any, option: any) => {
+            midd.webpack();
+            midd.content();
+        }
+    }).catch(() => process.exit(1));
+}
+/**
+ *  @deprecated
+ * @param config
+ * @param cb
+ */
+export function webpackDevServe(config: webpack.Configuration, cb: (err?: any) => void): void {
     // Create a server entry point to broswer reload
     WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
     // Initialite webpack compiler

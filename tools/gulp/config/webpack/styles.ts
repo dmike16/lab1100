@@ -8,11 +8,11 @@ const autoprefix = require('autoprefixer');
 
 export function webpackStyles(wbo: WebpackOption): Configuration {
     const { root, buildConfig } = wbo;
-    const entryPoints: { [key: string]: string } = {};
+    const entryPoints: { [key: string]: string[] } = {};
     const extraPlugin = [];
 
     buildConfig.styles.forEach((style) => {
-        entryPoints[style.name] = style.path;
+        entryPoints[style.name] = [style.path];
     });
     const common: Rule[] = [baseCssRule(wbo), baseSassRule(wbo), baseStylusRule(wbo)];
     const components: Rule[] = componentRules(wbo, common);
@@ -21,7 +21,7 @@ export function webpackStyles(wbo: WebpackOption): Configuration {
 
     if (buildConfig.extractCss) {
         extraPlugin.push(new MiniCssExtractPlugin({
-            filename: '[name].[chunkhash].css'
+            filename: '[name].[hash].css'
         }));
     }
 

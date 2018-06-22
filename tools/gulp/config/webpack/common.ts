@@ -74,14 +74,14 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
             modules: ['node_modules']
         },
         entry: {
-            polyfills: './polyfills.ts',
-            app: './main.ts'
+            polyfills: ['./polyfills.ts'],
+            app: ['./main.ts']
         },
         output: {
             path: path.resolve(root, buildConfig.outputPath),
             publicPath: buildConfig.deployPath,
-            filename: '[name].[chunkhash].js',
-            chunkFilename: '[id].[chunkhash].chunk.js'
+            filename: '[name].[hash].js',
+            chunkFilename: '[id].[hash].chunk.js'
         },
         module: {
             rules: [
