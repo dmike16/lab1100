@@ -14,7 +14,7 @@ const merge = require('webpack-merge');
  */
 export abstract class WebpackCommonPackage extends Package {
 
-  protected wbo: WebpackOption;
+  wbo: WebpackOption;
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:webpack`, dependencies);
     const tsConfig = this.resolveInProject('src', 'tsconfig.app.json');
@@ -139,7 +139,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       {
         serve: {
           historyApiFallback: true,
-           stats: 'minimal',
+          stats: 'minimal',
           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
@@ -164,8 +164,8 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
       ...wco,
       tsConfigPath: this.resolveInProject('src', 'tsconfig.spec.json')
     }, {
-      main: './test.ts'
-    });
+        main: './test.ts'
+      });
   }
 
   getConfig(): Configuration {
