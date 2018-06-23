@@ -2,6 +2,7 @@ import { WebpackOption } from './model';
 import { Configuration, Rule, loader, Loader } from 'webpack';
 import * as path from 'path';
 import { CssRawLoader } from './loader/webpack';
+import { getHashTypeFormat } from './utils';
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const autoprefix = require('autoprefixer');
@@ -19,9 +20,11 @@ export function webpackStyles(wbo: WebpackOption): Configuration {
     const globals: Rule[] = globalRules(wbo, common);
     const rules: Rule[] = [...components, ...globals];
 
+    const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
+
     if (buildConfig.extractCss) {
         extraPlugin.push(new MiniCssExtractPlugin({
-            filename: '[name].[hash].css'
+            filename: `[name]${hashFormat.asset}.css`
         }));
     }
 

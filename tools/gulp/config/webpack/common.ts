@@ -1,6 +1,7 @@
 import { WebpackOption } from './model';
 import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin } from 'webpack';
 import * as path from 'path';
+import { getHashTypeFormat } from './utils';
 
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
@@ -65,6 +66,8 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
             cache: true
         } : {};
 
+    const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
+
     return {
         mode: buildConfig.env,
         context: root,
@@ -75,13 +78,13 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         },
         entry: {
             polyfills: ['./polyfills.ts'],
-            app: ['./main.ts']
+            main: ['./main.ts']
         },
         output: {
             path: path.resolve(root, buildConfig.outputPath),
             publicPath: buildConfig.deployPath,
-            filename: '[name].[hash].js',
-            chunkFilename: '[id].[hash].chunk.js'
+            filename: `[name]${hashFormat.file}.js`,
+            chunkFilename: `[id]${hashFormat.chunk}.js`
         },
         module: {
             rules: [
@@ -98,7 +101,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                     use: [{
                         loader: 'file-loader',
                         options: {
-                            name: '[name].[hash].[ext]'
+                            name: `[name]${hashFormat.asset}.[ext]`
                         }
                     }]
                 },
@@ -107,7 +110,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                     use: [{
                         loader: 'url-loader',
                         options: {
-                            name: '[name].[hash].[ext]',
+                            name: `[name]${hashFormat.asset}.[ext]`,
                             limit: 10000
                         }
                     }]

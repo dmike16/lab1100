@@ -22,6 +22,8 @@ export interface BuildOption {
     debug: boolean;
     recordsPath?: string;
     main: string;
+    outputHash: 'none' | 'serve' | 'all';
+    outputHashLen?: number;
     i18nOutFile?: string;
     i18nOutFormat?: string;
     i18nLocale?: string;
