@@ -4,6 +4,8 @@ import webpack = require('webpack');
 import WebpackDevServer = require('webpack-dev-server');
 
 const serve = require('webpack-serve');
+const apiHistoryFallback = require('connect-history-api-fallback');
+const e2k = require('koa-convert');
 
 export function webpackCompile(config: webpack.Configuration, cb: (err?: any) => void): void {
     try {
@@ -45,6 +47,10 @@ export function webpackServe(config: webpack.Configuration, cb: (err?: any) => v
         add: (app: any, midd: any, option: any) => {
             midd.webpack();
             midd.content();
+
+            // History api fallback
+            const historyApiOpton = {};
+            app.use(e2k(apiHistoryFallback(historyApiOpton)));
         }
     }).catch(() => process.exit(1));
 }
