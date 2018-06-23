@@ -33,10 +33,16 @@
   ],
   "modules": {
     "byIdentifier": {
-      "css ../tools/gulp/config/webpack/loader/css-raw-loader.ts!../../node_modules/postcss-loader/lib/index.js??extracted!../../node_modules/sass-loader/lib/loader.js??ref--13-3!styles.scss 0": 0
+      "css ../tools/gulp/config/webpack/loader/css-raw-loader.ts!../../node_modules/postcss-loader/lib/index.js??extracted!../../node_modules/sass-loader/lib/loader.js??ref--13-3!styles.scss 0": 0,
+      "multi ./styles.scss": 1,
+      "multi ./main.ts": 2,
+      "multi ./polyfills.ts": 3
     },
     "usedIds": {
-      "0": 0
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3
     }
   },
   "chunks": {
@@ -55,5 +61,35 @@
       3,
       4
     ]
-  }
+  },
+  "src/app/app.component.html": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ],
+  "src/app/app.component.scss": [
+    {
+      "modules": {
+        "byIdentifier": {},
+        "usedIds": {}
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ]
 }

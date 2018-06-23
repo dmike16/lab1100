@@ -1,5 +1,4 @@
 import { task } from 'gulp';
-import WebpackDevServer = require('webpack-dev-server');
 import { webpackServe } from '@ngx-lab1100/process';
 import { WebpackServePackage } from '@ngx-lab1100/packages';
 

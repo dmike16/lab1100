@@ -7,11 +7,15 @@ export function webpackJIT(wbo: WebpackOption): Configuration {
     return webpackTypescript(wbo, true);
 }
 
+export function webpackTestJIT(wbo: WebpackOption): Configuration {
+    return webpackTypescript(wbo, true, false);
+}
+
 export function webpackAOT(wbo: WebpackOption): Configuration {
     return webpackTypescript(wbo);
 }
 
-function webpackTypescript(wbo: WebpackOption, skipCodeGeneration: boolean = false): Configuration {
+function webpackTypescript(wbo: WebpackOption, skipCodeGeneration: boolean = false, mainPath: boolean = true): Configuration {
     const {root, buildConfig, tsConfigPath} = wbo;
     const compiler = {
         test: skipCodeGeneration ? /\.tsx?$/ : /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
@@ -37,7 +41,7 @@ function webpackTypescript(wbo: WebpackOption, skipCodeGeneration: boolean = fal
         plugins: [
             new AngularCompilerPlugin({
                 tsConfigPath,
-                mainPath: path.resolve(root, buildConfig.main),
+                mainPath: mainPath ?  path.resolve(root, buildConfig.main) : undefined,
                 skipCodeGeneration,
                 sourceMap: buildConfig.sourceMap,
                 ...i18nFileAndFormat,

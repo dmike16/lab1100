@@ -4,7 +4,7 @@ import {
 import { Package, root } from './package';
 import {
   WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
-  webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption
+  webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption, webpackTestJIT
 } from '@ngx-lab1100/configuration';
 import { readFileSync } from 'fs';
 
@@ -33,6 +33,7 @@ export abstract class WebpackCommonPackage extends Package {
         higherCompression: false,
         extractCss: false,
         debug: false,
+        outputHash: 'none',
         assets: [{ input: 'assets', output: '/assets', glob: '**/*' }],
         ingorePath: [],
         indexHTML: 'index.html',
@@ -72,6 +73,7 @@ export class WebpackBuildJITPackage extends WebpackCommonPackage {
       buildOptimization: true,
       deployPath: '/',
       recordsPath: 'records.json',
+      outputHash: 'all',
       extractCss: true,
       higherCompression: true
     });
@@ -100,6 +102,7 @@ export class WebpackBuildAOTPackage extends WebpackCommonPackage {
       deployPath: '/',
       recordsPath: 'records.json',
       extractCss: true,
+      outputHash: 'all',
       higherCompression: true
     });
   }
@@ -121,7 +124,10 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = this.mergeWBO(wco, {});
+    this.wbo = this.mergeWBO(wco, {
+      outputHash: 'serve',
+      outputHashLen: 7
+    });
   }
 
   getConfig(): Configuration {
@@ -131,15 +137,16 @@ export class WebpackServePackage extends WebpackCommonPackage {
       webpackStyles(this.wbo),
       webpackJIT(this.wbo),
       {
-        devServer: {
+        serve: {
           historyApiFallback: true,
-          stats: 'minimal',
+           stats: 'minimal',
           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          port: 4200
+          port: 4200,
+          http2: true
         }
       }
     ];
@@ -153,15 +160,20 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = this.mergeWBO(wco, {});
+    this.wbo = this.mergeWBO({
+      ...wco,
+      tsConfigPath: this.resolveInProject('src', 'tsconfig.spec.json')
+    }, {
+      main: './test.ts'
+    });
   }
 
   getConfig(): Configuration {
     const configurations = [
       webpackCommon(this.wbo),
-      webpackTest(this.wbo),
       webpackStyles(this.wbo),
-      webpackJIT(this.wbo)
+      webpackTestJIT(this.wbo),
+      webpackTest(this.wbo),
     ];
     return merge(configurations);
   }

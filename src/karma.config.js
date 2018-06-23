@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Sun Dec 24 2017 17:23:10 GMT+0100 (CET)
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -9,10 +9,11 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
-
-    mime: { 'text/x-typescript': ['ts','tsx'] },
-    // test results reporter to use
+    frameworks: ['jasmine', '@ngx-lab/build-test'],
+    client: {
+      clearContext: false// leave Jasmine Spec Runner output visible in browser
+    },
+     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['kjhtml'],

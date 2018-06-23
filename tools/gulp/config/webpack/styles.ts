@@ -2,26 +2,29 @@ import { WebpackOption } from './model';
 import { Configuration, Rule, loader, Loader } from 'webpack';
 import * as path from 'path';
 import { CssRawLoader } from './loader/webpack';
+import { getHashTypeFormat } from './utils';
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const autoprefix = require('autoprefixer');
 
 export function webpackStyles(wbo: WebpackOption): Configuration {
     const { root, buildConfig } = wbo;
-    const entryPoints: { [key: string]: string } = {};
+    const entryPoints: { [key: string]: string[] } = {};
     const extraPlugin = [];
 
     buildConfig.styles.forEach((style) => {
-        entryPoints[style.name] = style.path;
+        entryPoints[style.name] = [style.path];
     });
     const common: Rule[] = [baseCssRule(wbo), baseSassRule(wbo), baseStylusRule(wbo)];
     const components: Rule[] = componentRules(wbo, common);
     const globals: Rule[] = globalRules(wbo, common);
     const rules: Rule[] = [...components, ...globals];
 
+    const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
+
     if (buildConfig.extractCss) {
         extraPlugin.push(new MiniCssExtractPlugin({
-            filename: '[name].[chunkhash].css'
+            filename: `[name]${hashFormat.asset}.css`
         }));
     }
 
