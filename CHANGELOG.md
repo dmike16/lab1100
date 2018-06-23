@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- add karma custom plugin
 - add classlist pollyfill
 - add husky npm dep
 - add tslint configuration file
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- parmetrizited the output hash name
 - pass to webpackserve
 - mod refacor webpack configuration
 - upgrade to webpack 4.x.x
