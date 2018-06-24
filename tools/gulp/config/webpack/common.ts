@@ -1,5 +1,5 @@
 import { WebpackOption } from './model';
-import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin } from 'webpack';
+import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin, NamedModulesPlugin } from 'webpack';
 import * as path from 'path';
 import { getHashTypeFormat } from './utils';
 
@@ -67,6 +67,11 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         } : {};
 
     const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
+    if (buildConfig.env === 'production') {
+        extraPlugin.push(new HashedModuleIdsPlugin());
+    } else {
+        extraPlugin.push(new NamedModulesPlugin());
+    }
 
     return {
         mode: buildConfig.env,
@@ -160,11 +165,14 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                 allowExternal: true
             }),
             new ProgressPlugin(),
-            new HashedModuleIdsPlugin(),
             new DefinePlugin({
                 'process.env': {
                     VERSION: JSON.stringify(version),
-                    PROJECT_NAME: JSON.stringify(name)
+                    PROJECT_NAME: JSON.stringify(name),
+                    BOOTSTAP_COMPETED: JSON.stringify('Bootstrap process completed'),
+                    BOOTSTRAP_ERROR: JSON.stringify('Bootstrap process terminated with error.'),
+                    BOOTSTRAP_HMR: JSON.stringify('HMR is enabled. Using @angularclass/hrm'),
+                    TYPE: buildConfig.hmr ? JSON.stringify('-hmr') : buildConfig.env === 'production' ? JSON.stringify('-prod') : JSON.stringify('')
                 }
             })
             , ...extraPlugin]

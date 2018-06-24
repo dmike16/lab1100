@@ -124,10 +124,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = this.mergeWBO(wco, {
-      outputHash: 'serve',
-      outputHashLen: 7
-    });
+    this.wbo = this.mergeWBO(wco, { });
   }
 
   getConfig(): Configuration {
@@ -138,14 +135,15 @@ export class WebpackServePackage extends WebpackCommonPackage {
       webpackJIT(this.wbo),
       {
         serve: {
-          historyApiFallback: true,
-          stats: 'minimal',
-          https: {
+          dev: {
+            publicPath: '/'
+          },
+           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          hot: this.wbo.buildConfig.hrm === true,
+          hot:  { host: 'localhost', port: '4201', https: false,  hmr: this.wbo.buildConfig.hmr === true , autoConfigure: this.wbo.buildConfig.hmr === true},
           port: 4200,
           http2: NODE_VERSION.major >= 9
         }

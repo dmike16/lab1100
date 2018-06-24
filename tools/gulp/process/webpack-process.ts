@@ -5,7 +5,7 @@ import WebpackDevServer = require('webpack-dev-server');
 
 const serve = require('webpack-serve');
 const apiHistoryFallback = require('connect-history-api-fallback');
-const e2k = require('koa-convert');
+const e2k = require('koa-connect');
 
 export function webpackCompile(config: webpack.Configuration, cb: (err?: any) => void): void {
     try {
@@ -40,6 +40,7 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
 }
 
 export function webpackServe(config: webpack.Configuration, cb: (err?: any) => void): void {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const compiler = webpack(config);
     serve({
         compiler,
@@ -49,7 +50,7 @@ export function webpackServe(config: webpack.Configuration, cb: (err?: any) => v
 
             // History api fallback
             const historyApiOpton = {};
-            app.use(e2k(apiHistoryFallback(historyApiOpton)));
+            app.use(e2k(apiHistoryFallback()));
         }
     }).catch(() => process.exit(1));
 }

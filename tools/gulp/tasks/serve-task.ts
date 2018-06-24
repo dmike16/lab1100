@@ -4,6 +4,8 @@ import { WebpackServePackage } from '@ngx-lab1100/packages';
 
 export function createServeWebpackTask(servePack: WebpackServePackage): void {
     task(`${servePack.getName()}:serve`, (cb: (err?: any) => void) => {
-        webpackServe(servePack.getConfig(),  cb);
+        const argv = servePack.getArgv({ hmr: 'false' });
+        servePack.wbo.buildConfig.hmr = argv.hmr === 'true';
+        webpackServe(servePack.getConfig(), cb);
     });
 }
