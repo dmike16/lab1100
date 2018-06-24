@@ -43,7 +43,6 @@ export function webpackServe(config: webpack.Configuration, cb: (err?: any) => v
     const compiler = webpack(config);
     serve({
         compiler,
-        hot: false,
         add: (app: any, midd: any, option: any) => {
             midd.webpack();
             midd.content();

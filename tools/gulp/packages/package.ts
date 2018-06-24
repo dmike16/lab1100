@@ -4,7 +4,7 @@ import { resolve, join } from 'path';
  * @param  {string}   name         [package name]
  * @param  {Package[]} dependencies [dependencies]
  */
-export  abstract class Package {
+export abstract class Package {
 
   constructor(protected name: string, protected dependencies?: Package[]) { }
 
@@ -55,3 +55,12 @@ export type Argv<T> = {
 };
 
 export const root: string = resolve(__dirname, '../../../');
+
+export const NODE_VERSION = (() => {
+  const v = process.version.replace('v', '').split('.');
+  return {
+    major: parseInt(v[0], 10),
+    minor: parseInt(v[1], 10),
+    patch: parseInt(v[2], 10)
+  };
+})();

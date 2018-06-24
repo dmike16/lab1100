@@ -1,7 +1,7 @@
 import {
   Configuration
 } from 'webpack';
-import { Package, root } from './package';
+import { Package, root, NODE_VERSION } from './package';
 import {
   WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
   webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption, webpackTestJIT
@@ -145,8 +145,9 @@ export class WebpackServePackage extends WebpackCommonPackage {
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
+          hot: this.wbo.buildConfig.hrm === true,
           port: 4200,
-          http2: true
+          http2: NODE_VERSION.major >= 9
         }
       }
     ];
