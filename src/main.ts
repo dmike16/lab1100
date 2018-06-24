@@ -14,10 +14,10 @@ if (enviroment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
-  .then((ngModuleRef: any) => {
+  .then((ngModule: any) => {
     console.info(`%c${process.env.BOOTSTAP_COMPETED}`, 'font-size:10px;color:#757575;');
     if (enviroment.hrm) {
       console.info(`%c${process.env.BOOTSTRAP_HMR}`, 'font-size:10px;color:#757575;');
-      return hmrModule(ngModuleRef, module);
+      hmrModule(ngModule, module);
     }
   }).catch((err) => console.error(`%c${process.env.BOOTSTRAP_ERROR}`, 'font-size:10px;color:#757575;', err));

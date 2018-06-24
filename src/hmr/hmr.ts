@@ -3,11 +3,10 @@ import { createNewHosts, removeNgStyles } from '@angularclass/hmr';
 
 export function hmrModule(ngModuleRef: any, module: any) {
     if (module && module['hot']) {
-        console.info('IN HMR');
         // accept module replacement
         module.hot.accept();
         // remove old component
-        module.hot.dispose(function hmrDestroy() {
+        module.hot.dispose(() => {
             const appRef: ApplicationRef = ngModuleRef.injector.get(ApplicationRef);
             const nativeComponents = appRef.components.map((cmp) => cmp.location.nativeElement);
             const makeVisible = createNewHosts(nativeComponents);
@@ -16,5 +15,4 @@ export function hmrModule(ngModuleRef: any, module: any) {
             makeVisible();
         });
     }
-    return ngModuleRef;
 }

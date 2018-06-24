@@ -1,5 +1,5 @@
 import { WebpackOption } from './model';
-import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin, NamedModulesPlugin } from 'webpack';
+import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin, NamedModulesPlugin, HotModuleReplacementPlugin } from 'webpack';
 import * as path from 'path';
 import { getHashTypeFormat } from './utils';
 
@@ -71,6 +71,9 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         extraPlugin.push(new HashedModuleIdsPlugin());
     } else {
         extraPlugin.push(new NamedModulesPlugin());
+        if (buildConfig.hmr) {
+            extraPlugin.push(new HotModuleReplacementPlugin());
+        }
     }
 
     return {

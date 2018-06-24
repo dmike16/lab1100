@@ -134,6 +134,16 @@ export class WebpackServePackage extends WebpackCommonPackage {
       webpackStyles(this.wbo),
       webpackJIT(this.wbo),
       {
+        devServer: {
+          publicPath: '/',
+          https: {
+            key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
+            cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
+          },
+          host: 'localhost',
+          port: 4200,
+          hot: this.wbo.buildConfig.hmr === true
+        },
         serve: {
           dev: {
             publicPath: '/'
@@ -143,7 +153,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          hot:  { host: 'localhost', port: '4201', https: false,  hmr: this.wbo.buildConfig.hmr === true , autoConfigure: this.wbo.buildConfig.hmr === true},
+          hot:  { host: 'localhost', port: '4201', https: false,  hmr: this.wbo.buildConfig.hmr === true , autoConfigure: false},
           port: 4200,
           http2: NODE_VERSION.major >= 9
         }
