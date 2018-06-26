@@ -148,12 +148,12 @@ export class WebpackServePackage extends WebpackCommonPackage {
           dev: {
             publicPath: '/'
           },
-           https: {
+          https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          hot:  { host: 'localhost', port: '4201', https: false,  hmr: this.wbo.buildConfig.hmr === true , autoConfigure: false},
+          hot:  { host: 'localhost', https: true,  hmr: this.wbo.buildConfig.hmr === true , autoConfigure: true, allEntries: true},
           port: 4200,
           http2: NODE_VERSION.major >= 9
         }

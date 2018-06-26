@@ -73,7 +73,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         extraPlugin.push(new NamedModulesPlugin());
         if (buildConfig.hmr) {
             extraPlugin.push(new HotModuleReplacementPlugin());
-        }
+         }
     }
 
     return {

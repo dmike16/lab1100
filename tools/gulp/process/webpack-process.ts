@@ -11,6 +11,7 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
     try {
         // Configure the compiler
         const compiler = webpack(config);
+        compiler.name = 'ngx-lab1100';
         // Run compilation process
         compiler.run((err, stats) => {
             if (err) {
@@ -42,6 +43,7 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
 export function webpackServe(config: webpack.Configuration, cb: (err?: any) => void): void {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const compiler = webpack(config);
+    compiler.name = 'ngx-lab1100';
     serve({
         compiler,
         add: (app: any, midd: any, option: any) => {
@@ -64,6 +66,7 @@ export function webpackDevServe(config: webpack.Configuration, cb: (err?: any) =
     WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
     // Initialite webpack compiler
     const compiler = webpack(config);
+    compiler.name = 'ngx-lab1100';
     // Create the server instance
     const webpackDevServerOpts = Object.assign(config.devServer, {
         stats: {

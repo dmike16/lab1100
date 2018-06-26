@@ -9,7 +9,7 @@
   "scripts": {
     "info": "gulp ngx-lab1100:info",
     "serve": "gulp ngx-lab1100:webpack:serve",
-    "serve:hmr": "gulp ngx-lab1100:webpack:serve --hmr true",
+    "serve:hmr": "gulp ngx-lab1100:webpack:serve --hmr",
     "build:jit": "gulp ngx-lab1100:jit:webpack:build",
     "build:aot": "gulp ngx-lab1100:aot:webpack:build",
     "prod-it": "gulp ngx-lab1100-it:aot:webpack:build",
