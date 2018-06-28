@@ -12,6 +12,7 @@ const { version, name } = require('../../../../package.json');
 export function webpackCommon(wbo: WebpackOption): Configuration {
     const { root, buildConfig, projectRoot } = wbo;
     const extraPlugin: any[] = [];
+    const entryPoint: { [key: string]: string | string[] } = {};
     const rxPaths = wbo.es2015support ? require('rxjs/_esm2015/path-mapping') : require('rxjs/_esm5/path-mapping');
     const resolve = {
         extensions: ['.ts', '.tsx', '.mjs', '.js'],
@@ -67,13 +68,27 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         } : {};
 
     const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
+
+    // FIX: for webpack-hot-cliente ~3.0.0 until webpack-serve update to next version.
+    if (buildConfig.polyfills && buildConfig.hmr) {
+        entryPoint['polyfills'] = [buildConfig.polyfills];
+    } else {
+        entryPoint['polyfills'] = buildConfig.polyfills;
+    }
+
+    if (buildConfig.main && buildConfig.hmr) {
+        entryPoint['main'] = [buildConfig.main];
+    } else {
+        entryPoint['main'] = buildConfig.main;
+    }
+
     if (buildConfig.env === 'production') {
         extraPlugin.push(new HashedModuleIdsPlugin());
     } else {
         extraPlugin.push(new NamedModulesPlugin());
         if (buildConfig.hmr) {
             extraPlugin.push(new HotModuleReplacementPlugin());
-         }
+        }
     }
 
     return {
@@ -84,10 +99,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         resolveLoader: {
             modules: ['node_modules']
         },
-        entry: {
-            polyfills: ['./polyfills.ts'],
-            main: ['./main.ts']
-        },
+        entry: entryPoint,
         output: {
             path: path.resolve(root, buildConfig.outputPath),
             publicPath: buildConfig.deployPath,
