@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- fallback to webpackdevserver
 - parmetrizited the output hash name
 - pass to webpackserve
 - mod refacor webpack configuration
