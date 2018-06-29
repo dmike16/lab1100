@@ -2,7 +2,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { enableProdMode } from '@angular/core';
 
 import { AppModule } from './app/app.module';
-import { hmrModule } from './hmr/hmr';
+import { hmrBootstrap } from './hmr/hmr';
 
 const enviromentType = process.env.TYPE;
 const enviroment: { production: boolean; hrm: boolean } = require(`./env/enviroment${enviromentType}`).default;
@@ -13,11 +13,16 @@ if (enviroment.production) {
   console.info(`%cv${process.env.VERSION}`, 'font-size:11px;color:#FF5252;');
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .then((ngModule: any) => {
-    console.info(`%c${process.env.BOOTSTAP_COMPETED}`, 'font-size:10px;color:#757575;');
-    if (enviroment.hrm) {
-      console.info(`%c${process.env.BOOTSTRAP_HMR}`, 'font-size:10px;color:#757575;');
-      hmrModule(ngModule, module);
-    }
-  }).catch((err) => console.error(`%c${process.env.BOOTSTRAP_ERROR}`, 'font-size:10px;color:#757575;', err));
+const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);
+
+if (enviroment.hrm) {
+  if ((module as any)['hot']) {
+    console.info(`%c${process.env.BOOTSTRAP_HMR}`, 'font-size:10px;color:#757575;');
+    hmrBootstrap(module, bootstrap);
+  } else {
+    console.error('HMR is not enabled for webpack-dev-server!');
+    console.info('Are you using the serve:hmr task?');
+  }
+} else {
+  bootstrap();
+}
