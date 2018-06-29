@@ -4,7 +4,7 @@ import { resolve, join } from 'path';
  * @param  {string}   name         [package name]
  * @param  {Package[]} dependencies [dependencies]
  */
-export  abstract class Package {
+export abstract class Package {
 
   constructor(protected name: string, protected dependencies?: Package[]) { }
 
@@ -34,6 +34,9 @@ export  abstract class Package {
       const flag = /^--{0,1}(.*)/.exec(value);
       if (flag && accumulator.hasOwnProperty(flag[1])) {
         lastKey = flag[1] as (keyof T);
+        if (typeof accumulator[lastKey] === 'boolean') {
+          accumulator[lastKey] = true;
+        }
       } else {
         if (accumulator[lastKey] instanceof Array) {
           accumulator[lastKey] = value.split(',');
@@ -51,7 +54,16 @@ export  abstract class Package {
 }
 
 export type Argv<T> = {
-  [P in keyof T]: string | string[];
+  [P in keyof T]: boolean | string | string[];
 };
 
 export const root: string = resolve(__dirname, '../../../');
+
+export const NODE_VERSION = (() => {
+  const v = process.version.replace('v', '').split('.');
+  return {
+    major: parseInt(v[0], 10),
+    minor: parseInt(v[1], 10),
+    patch: parseInt(v[2], 10)
+  };
+})();

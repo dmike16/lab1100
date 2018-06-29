@@ -1,5 +1,5 @@
 import { WebpackOption } from './model';
-import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin } from 'webpack';
+import { Configuration, ContextReplacementPlugin, ProgressPlugin, HashedModuleIdsPlugin, DefinePlugin, NamedModulesPlugin, HotModuleReplacementPlugin } from 'webpack';
 import * as path from 'path';
 import { getHashTypeFormat } from './utils';
 
@@ -12,6 +12,7 @@ const { version, name } = require('../../../../package.json');
 export function webpackCommon(wbo: WebpackOption): Configuration {
     const { root, buildConfig, projectRoot } = wbo;
     const extraPlugin: any[] = [];
+    const entryPoint: { [key: string]: string | string[] } = {};
     const rxPaths = wbo.es2015support ? require('rxjs/_esm2015/path-mapping') : require('rxjs/_esm5/path-mapping');
     const resolve = {
         extensions: ['.ts', '.tsx', '.mjs', '.js'],
@@ -68,6 +69,28 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
 
     const hashFormat = getHashTypeFormat(buildConfig.outputHash, buildConfig.outputHashLen);
 
+    // FIX: for webpack-hot-cliente ~3.0.0 until webpack-serve update to next version.
+    if (buildConfig.polyfills && buildConfig.hmr) {
+        entryPoint['polyfills'] = [buildConfig.polyfills];
+    } else {
+        entryPoint['polyfills'] = buildConfig.polyfills;
+    }
+
+    if (buildConfig.main && buildConfig.hmr) {
+        entryPoint['main'] = [buildConfig.main];
+    } else {
+        entryPoint['main'] = buildConfig.main;
+    }
+
+    if (buildConfig.env === 'production') {
+        extraPlugin.push(new HashedModuleIdsPlugin());
+    } else {
+        extraPlugin.push(new NamedModulesPlugin());
+        if (buildConfig.hmr) {
+            extraPlugin.push(new HotModuleReplacementPlugin());
+        }
+    }
+
     return {
         mode: buildConfig.env,
         context: root,
@@ -76,10 +99,7 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
         resolveLoader: {
             modules: ['node_modules']
         },
-        entry: {
-            polyfills: ['./polyfills.ts'],
-            main: ['./main.ts']
-        },
+        entry: entryPoint,
         output: {
             path: path.resolve(root, buildConfig.outputPath),
             publicPath: buildConfig.deployPath,
@@ -160,11 +180,14 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
                 allowExternal: true
             }),
             new ProgressPlugin(),
-            new HashedModuleIdsPlugin(),
             new DefinePlugin({
                 'process.env': {
                     VERSION: JSON.stringify(version),
-                    PROJECT_NAME: JSON.stringify(name)
+                    PROJECT_NAME: JSON.stringify(name),
+                    BOOTSTAP_COMPETED: JSON.stringify('Bootstrap process completed'),
+                    BOOTSTRAP_ERROR: JSON.stringify('Bootstrap process terminated with error.'),
+                    BOOTSTRAP_HMR: JSON.stringify('HMR is enabled. Using @angularclass/hrm'),
+                    TYPE: buildConfig.hmr ? JSON.stringify('-hmr') : buildConfig.env === 'production' ? JSON.stringify('-prod') : JSON.stringify('')
                 }
             })
             , ...extraPlugin]

@@ -8,9 +8,6 @@ import {
 } from '@ngx-lab1100/packages';
 import { ZipPackage } from '@ngx-lab1100/packages';
 import { E2eProtractorPackage } from '@ngx-lab1100/packages';
-import { WebpackOption } from '@ngx-lab1100/configuration';
-import * as path from 'path';
-import { root } from 'packages/package';
 
 export const infoPack = new InfoPackage('ngx-lab1100');
 export const webpackBuildPack = new WebpackBuildJITPackage('ngx-lab1100');

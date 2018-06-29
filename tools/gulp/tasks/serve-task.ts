@@ -1,9 +1,13 @@
 import { task } from 'gulp';
-import { webpackServe } from '@ngx-lab1100/process';
+import { webpackServe, webpackDevServe } from '@ngx-lab1100/process';
 import { WebpackServePackage } from '@ngx-lab1100/packages';
 
 export function createServeWebpackTask(servePack: WebpackServePackage): void {
     task(`${servePack.getName()}:serve`, (cb: (err?: any) => void) => {
-        webpackServe(servePack.getConfig(),  cb);
+        const argv = servePack.getArgv({ hmr: false });
+        servePack.wbo.buildConfig.hmr = argv.hmr === true;
+        // TODO: dmike16 fix webpack-serve not reloading
+        webpackDevServe(servePack.getConfig(), cb);
+        // webpackServe(servePack.getConfig(), cb);
     });
 }

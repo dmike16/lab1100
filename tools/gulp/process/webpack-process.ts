@@ -5,12 +5,13 @@ import WebpackDevServer = require('webpack-dev-server');
 
 const serve = require('webpack-serve');
 const apiHistoryFallback = require('connect-history-api-fallback');
-const e2k = require('koa-convert');
+const e2k = require('koa-connect');
 
 export function webpackCompile(config: webpack.Configuration, cb: (err?: any) => void): void {
     try {
         // Configure the compiler
         const compiler = webpack(config);
+        compiler.name = 'ngx-lab1100';
         // Run compilation process
         compiler.run((err, stats) => {
             if (err) {
@@ -40,17 +41,18 @@ export function webpackCompile(config: webpack.Configuration, cb: (err?: any) =>
 }
 
 export function webpackServe(config: webpack.Configuration, cb: (err?: any) => void): void {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const compiler = webpack(config);
+    compiler.name = 'ngx-lab1100';
     serve({
         compiler,
-        hot: false,
         add: (app: any, midd: any, option: any) => {
             midd.webpack();
             midd.content();
 
             // History api fallback
             const historyApiOpton = {};
-            app.use(e2k(apiHistoryFallback(historyApiOpton)));
+            app.use(e2k(apiHistoryFallback()));
         }
     }).catch(() => process.exit(1));
 }
@@ -64,6 +66,7 @@ export function webpackDevServe(config: webpack.Configuration, cb: (err?: any) =
     WebpackDevServer.addDevServerEntrypoints(config, config.devServer);
     // Initialite webpack compiler
     const compiler = webpack(config);
+    compiler.name = 'ngx-lab1100';
     // Create the server instance
     const webpackDevServerOpts = Object.assign(config.devServer, {
         stats: {

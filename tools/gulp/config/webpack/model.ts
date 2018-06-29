@@ -22,7 +22,10 @@ export interface BuildOption {
     debug: boolean;
     recordsPath?: string;
     main: string;
+    polyfills: string;
     outputHash: 'none' | 'serve' | 'all';
+    hmr?: boolean | object;
+    hmrSocketClient?: string;
     outputHashLen?: number;
     i18nOutFile?: string;
     i18nOutFormat?: string;

@@ -6,7 +6,7 @@ export function runKarmaTest(krmPack: WebpackKarmaPackage, done: () => void) {
     // Add webpack config to karma
     const karmaConfig: any = Object.assign({}, {
         // webpack: krmPack.getConfig(),
-        configFile: krmPack.resolveInProject('src', 'karma.config.js'),
+        configFile: `${krmPack.wbo.root}/karma.config.js`,
         ngxConfig: { webpack: krmPack.getConfig() },
         plugins: [
             require('karma-jasmine'),

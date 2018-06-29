@@ -51,15 +51,16 @@
       "vendor": 1,
       "styles": 2,
       "app": 3,
-      "polyfills": 4
+      "polyfills": 4,
+      "main": 5
     },
     "bySource": {},
     "usedIds": [
       0,
       1,
       2,
-      3,
-      4
+      4,
+      5
     ]
   },
   "src/app/app.component.html": [

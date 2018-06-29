@@ -1,7 +1,7 @@
 import {
   Configuration
 } from 'webpack';
-import { Package, root } from './package';
+import { Package, root, NODE_VERSION } from './package';
 import {
   WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
   webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption, webpackTestJIT
@@ -14,7 +14,7 @@ const merge = require('webpack-merge');
  */
 export abstract class WebpackCommonPackage extends Package {
 
-  protected wbo: WebpackOption;
+  wbo: WebpackOption;
   constructor(name: string, dependencies?: Package[]) {
     super(`${name}:webpack`, dependencies);
     const tsConfig = this.resolveInProject('src', 'tsconfig.app.json');
@@ -40,6 +40,7 @@ export abstract class WebpackCommonPackage extends Package {
         platform: 'broswer',
         outputPath: '../build',
         main: './main.ts',
+        polyfills: './polyfills.ts',
         styles: [{ name: 'styles', path: './styles.scss' }]
       }
     };
@@ -125,8 +126,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
     this.wbo = this.mergeWBO(wco, {
-      outputHash: 'serve',
-      outputHashLen: 7
+      hmrSocketClient: 'webpack-hot-client/client?ngx-lab1100',
     });
   }
 
@@ -137,16 +137,28 @@ export class WebpackServePackage extends WebpackCommonPackage {
       webpackStyles(this.wbo),
       webpackJIT(this.wbo),
       {
-        serve: {
-          historyApiFallback: true,
-           stats: 'minimal',
+        devServer: {
+          publicPath: '/',
           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
           port: 4200,
-          http2: true
+          hot: this.wbo.buildConfig.hmr === true
+        },
+        serve: {
+          dev: {
+            publicPath: '/'
+          },
+          /*https: {
+            key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
+            cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
+          },*/
+          host: 'localhost',
+          hot: { host: 'localhost', port: 4201, https: false, hmr: this.wbo.buildConfig.hmr === true, autoConfigure: true },
+          port: 4200,
+          http2: false && NODE_VERSION.major >= 9
         }
       }
     ];
@@ -164,8 +176,8 @@ export class WebpackKarmaPackage extends WebpackCommonPackage {
       ...wco,
       tsConfigPath: this.resolveInProject('src', 'tsconfig.spec.json')
     }, {
-      main: './test.ts'
-    });
+        main: './test.ts'
+      });
   }
 
   getConfig(): Configuration {
