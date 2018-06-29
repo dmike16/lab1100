@@ -25,7 +25,7 @@ export interface BuildOption {
     polyfills: string;
     outputHash: 'none' | 'serve' | 'all';
     hmr?: boolean | object;
-    hmrSocketClient?: string;
+    https?: false | { key: string | Buffer; cert: string | Buffer };
     outputHashLen?: number;
     i18nOutFile?: string;
     i18nOutFormat?: string;

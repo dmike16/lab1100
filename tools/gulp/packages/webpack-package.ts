@@ -41,6 +41,7 @@ export abstract class WebpackCommonPackage extends Package {
         outputPath: '../build',
         main: './main.ts',
         polyfills: './polyfills.ts',
+        https: false,
         styles: [{ name: 'styles', path: './styles.scss' }]
       }
     };
@@ -125,9 +126,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   constructor(name: string, wco?: WebpackOption, dependencies?: Package[]) {
     super(name, dependencies);
-    this.wbo = this.mergeWBO(wco, {
-      hmrSocketClient: 'webpack-hot-client/client?ngx-lab1100',
-    });
+    this.wbo = this.mergeWBO(wco, {});
   }
 
   getConfig(): Configuration {
@@ -139,27 +138,25 @@ export class WebpackServePackage extends WebpackCommonPackage {
       {
         devServer: {
           publicPath: '/',
+          https: this.wbo.buildConfig.https,
+          host: 'localhost',
+          port: 4200,
+          hot: this.wbo.buildConfig.hmr === true
+        }
+        /*, TODO(dmike16): FIX webpack-serve reloading
+        serve: {
+          dev: {
+            publicPath: '/'
+          },
           https: {
             key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
             cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
           },
           host: 'localhost',
-          port: 4200,
-          hot: this.wbo.buildConfig.hmr === true
-        },
-        serve: {
-          dev: {
-            publicPath: '/'
-          },
-          /*https: {
-            key: readFileSync(this.resolveInProject('tools/ssl/ssl.key')),
-            cert: readFileSync(this.resolveInProject('tools/ssl/ssl.crt'))
-          },*/
-          host: 'localhost',
           hot: { host: 'localhost', port: 4201, https: false, hmr: this.wbo.buildConfig.hmr === true, autoConfigure: true },
           port: 4200,
           http2: false && NODE_VERSION.major >= 9
-        }
+      } */
       }
     ];
     return merge(configurations);
