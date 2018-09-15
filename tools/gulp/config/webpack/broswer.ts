@@ -1,6 +1,7 @@
 import { WebpackOption } from './model';
 import { Configuration } from 'webpack';
 import * as path from 'path';
+import { chunkSort } from './utils';
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -51,7 +52,8 @@ export function webpackBroswer(wbo: WebpackOption): Configuration {
             ...extraPlugin,
             new HtmlWebpackPlugin({
                 template: path.resolve(root, buildConfig.indexHTML),
-                xhtml: true
+                xhtml: true,
+                chunksSortMode: chunkSort(wbo)
             })]
     };
 }

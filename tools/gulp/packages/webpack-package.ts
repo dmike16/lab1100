@@ -1,12 +1,11 @@
 import {
   Configuration
 } from 'webpack';
-import { Package, root, NODE_VERSION } from './package';
+import { Package } from './package';
 import {
   WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
   webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption, webpackTestJIT
 } from '@ngx-lab1100/configuration';
-import { readFileSync } from 'fs';
 
 const merge = require('webpack-merge');
 /**
