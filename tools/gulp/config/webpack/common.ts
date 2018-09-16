@@ -169,12 +169,6 @@ export function webpackCommon(wbo: WebpackOption): Configuration {
             ]
         },
         plugins: [
-            // Fix an angular warning
-            new ContextReplacementPlugin(
-                /angular(\\|\/)core(\\|\/)(@angular|esm5|fesm5|fesm2015)/,
-                root,
-                {}
-            ),
             // Clean dist on rebuild
             new CleanWebpackPlugin([path.resolve(root, buildConfig.outputPath)], {
                 allowExternal: true

@@ -77,7 +77,7 @@ export function webpackDevServe(config: webpack.Configuration, cb: (err?: any) =
             }
         }
     });
-    const server = new WebpackDevServer(compiler, config.devServer);
+    const server = new WebpackDevServer(compiler, webpackDevServerOpts);
     // Close serve un SIGINT,SIGTERM event
     closeOnSign(server, ['SIGINT', 'SIGTERM'], () => true);
     server.listen(config.devServer.port, config.devServer.host, (err: any) => {

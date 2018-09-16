@@ -1,4 +1,4 @@
-import { readFileSync, createReadStream } from 'fs';
+import { createReadStream } from 'fs';
 import { Observable, Subscriber } from 'rxjs';
 import { map, takeLast } from 'rxjs/operators';
 

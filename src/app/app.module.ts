@@ -3,10 +3,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { HomeModule } from './home/home.module';
 
 @NgModule({
   imports: [
-    BrowserModule
+    BrowserModule,
+    HomeModule,
+    AppRoutingModule
   ],
   declarations: [
     AppComponent
@@ -15,12 +19,10 @@ import { AppComponent } from './app.component';
   // entryComponents: [AppComponent]
 })
 export class AppModule {
-  constructor(private injector: Injector) { }
+  // constructor(private injector: Injector) { }
 
-  ngDoBootstrap() {
-    /*
+   /*ngDoBootstrap() {
     const MyAppElement = createCustomElement(AppComponent, { injector: this.injector });
     customElements.define('my-app', MyAppElement);
-    */
-  }
+  }*/
 }
