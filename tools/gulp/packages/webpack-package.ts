@@ -130,10 +130,10 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   getConfig(): Configuration {
     const configurations = [
+      webpackJIT(this.wbo),
       webpackCommon(this.wbo),
       webpackBroswer(this.wbo),
       webpackStyles(this.wbo),
-      webpackJIT(this.wbo),
       {
         devServer: {
           publicPath: '/',
@@ -158,6 +158,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       } */
       }
     ];
+
     return merge(configurations);
   }
 }

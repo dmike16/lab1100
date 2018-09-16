@@ -1,9 +1,8 @@
 import { Configuration } from 'webpack';
 import { WebpackOption } from './model';
-import * as path from 'path';
 
 export function webpackTest(wbo: WebpackOption): Configuration {
-    const { buildConfig, root } = wbo;
+    const { buildConfig } = wbo;
     return {
         mode: 'development',
         devtool: buildConfig.sourceMap ? 'cheap-module-eval-source-map' : false,

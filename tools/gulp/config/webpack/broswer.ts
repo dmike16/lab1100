@@ -2,6 +2,7 @@ import { WebpackOption } from './model';
 import { Configuration } from 'webpack';
 import * as path from 'path';
 import { chunkSort } from './utils';
+import { BasehrefWebpackPlugin } from '../../plugins/basehref-webpack';
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -54,6 +55,7 @@ export function webpackBroswer(wbo: WebpackOption): Configuration {
                 template: path.resolve(root, buildConfig.indexHTML),
                 xhtml: true,
                 chunksSortMode: chunkSort(wbo)
-            })]
+            }),
+            new BasehrefWebpackPlugin({ baseHref: '/'})]
     };
 }
