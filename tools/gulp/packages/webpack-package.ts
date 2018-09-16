@@ -1,12 +1,11 @@
 import {
   Configuration
 } from 'webpack';
-import { Package, root, NODE_VERSION } from './package';
+import { Package } from './package';
 import {
   WebpackOption, webpackCommon, webpackBroswer, webpackStyles,
   webpackJIT, webpackTest, webpackAOT, resolveTsConfigTarget, BuildOption, webpackTestJIT
 } from '@ngx-lab1100/configuration';
-import { readFileSync } from 'fs';
 
 const merge = require('webpack-merge');
 /**
@@ -140,6 +139,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
           publicPath: '/',
           https: this.wbo.buildConfig.https,
           host: 'localhost',
+          historyApiFallback: true,
           port: 4200,
           hot: this.wbo.buildConfig.hmr === true
         }
@@ -159,6 +159,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
       } */
       }
     ];
+
     return merge(configurations);
   }
 }
