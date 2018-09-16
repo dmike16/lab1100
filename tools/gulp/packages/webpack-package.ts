@@ -130,15 +130,16 @@ export class WebpackServePackage extends WebpackCommonPackage {
 
   getConfig(): Configuration {
     const configurations = [
-      webpackJIT(this.wbo),
       webpackCommon(this.wbo),
       webpackBroswer(this.wbo),
       webpackStyles(this.wbo),
+      webpackJIT(this.wbo),
       {
         devServer: {
           publicPath: '/',
           https: this.wbo.buildConfig.https,
           host: 'localhost',
+          historyApiFallback: true,
           port: 4200,
           hot: this.wbo.buildConfig.hmr === true
         }

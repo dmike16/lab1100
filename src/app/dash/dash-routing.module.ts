@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashComponent } from './dash.component';
 
-const dashRoutes: Routes = [
+export const dashRoutes: Routes = [
     { path: '', component: DashComponent }
 ];
 
