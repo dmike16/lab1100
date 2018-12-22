@@ -139,6 +139,7 @@ export class WebpackServePackage extends WebpackCommonPackage {
           publicPath: '/',
           https: this.wbo.buildConfig.https,
           host: 'localhost',
+          disableHostCheck: true,
           historyApiFallback: true,
           port: 4200,
           hot: this.wbo.buildConfig.hmr === true
